@@ -48,8 +48,19 @@ Setelah Anda mengirimkan PR, tim pengembang akan meninjau kontribusi Anda. Jika 
 
 Terima kasih atas partisipasi Anda dalam proyek GAMI!
 
+## Dokumentasi
 
-## `Executive_Dashboard_Controller@index`
+Berikut adalah dokumentasi fungsi-fungsi yang membentuk aplikasi.
+
+Daftar isi :
+<ul>
+<li>Executive Dashboard Controller</li>
+<li>Admin Dashboard Controller</li>
+</ul>
+
+### `Executive_Dashboard_Controller`
+
+#### `index`
 
 Metode `index` pada kelas `Executive_Dashboard_Controller` bertugas untuk merender tampilan dashboard eksekutif dengan berbagai data statistik. Metode ini melakukan operasi-operasi berikut:
 
@@ -63,21 +74,21 @@ Metode `index` pada kelas `Executive_Dashboard_Controller` bertugas untuk merend
 8. Memanggil fungsi `calculateCustomerSatisfaction` untuk menghitung skor kepuasan pelanggan berdasarkan data rating.
 9. Menyampaikan semua data yang dihitung dan variabel lain yang diperlukan ke tampilan `dashboard-general-dashboard` untuk dirender.
 
-### Tanda Metode
+##### Tanda Metode
 
 ```php
 public function index()
 ```
 
-### Parameter
+##### Parameter
 
 Metode ini tidak menerima parameter apapun.
 
-### Nilai Kembalian
+##### Nilai Kembalian
 
 Metode ini mengembalikan sebuah instance dari kelas `Illuminate\View\View`, yang mewakili tampilan yang telah dirender.
 
-### Contoh Penggunaan
+##### Contoh Penggunaan
 
 ```php
 $controller = new Executive_Dashboard_Controller();
