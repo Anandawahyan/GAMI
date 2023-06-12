@@ -1,75 +1,87 @@
-<p align="center">
-  <a href="https://laravel.com/">
-    <img src="https://laravel.com/img/logomark.min.svg" alt="laravel logo" width="75" height="75">
-  </a>
-  <a href="https://getstisla.com">
-    <img src="https://avatars2.githubusercontent.com/u/45754626?s=75&v=4" alt="Stisla logo" width="75" height="75">
-  </a>
-</p>
+# GAMI
 
-<h1 align="center">Laravel Stisla</h1>
+Proyek GAMI adalah sebuah website ecommerce thrift-shop. Tujuan proyek ini adalah untuk membuat sistem ecommerce yang dapat dipantau dan memudahkan owner membuat keputusan.
 
-<span align="center">
+## Kontribusi
 
-**Laravel Stisla** is a Free Bootstrap Admin Template which will help you to speed up your project and design your own dashboard UI using Laravel blade templating engine.
+Kami sangat menyambut kontribusi dari para pengembang untuk meningkatkan proyek ini. Dalam dokumentasi ini, Anda akan menemukan langkah-langkah yang perlu diikuti untuk berkontribusi ke proyek ini.
 
-</span>
+## Panduan Kontribusi
 
-<br>
+Berikut adalah langkah-langkah untuk berkontribusi ke proyek GAMI:
 
-<p align="center">
-  <a href="https://getstisla.com">Homepage</a>
-  •
-  <a href="https://github.com/edikurniawan-dev/laravel-stisla#quick-start">Getting Started</a>
-  •
-  <a href="https://demo.getstisla.com" target="_new">Demo</a>
-  •
-  <a href="https://getstisla.com/docs">Documentation</a>
-  •
-  <a href="https://getstisla.com/blog">Blog</a>
-  •
-  <a href="https://github.com/edikurniawan-dev/laravel-stisla/issues">Issue</a>
-</p>
+1. **Fork** repositori ini ke akun GitHub Anda dengan mengeklik tombol "Fork" di atas halaman repositori.
+2. **Clone** repositori yang telah Anda fork ke akun GitHub Anda ke komputer lokal Anda dengan menggunakan perintah berikut:
 
-<br>
+   ```bash
+   git clone https://github.com/rizkisiraj/GAMI
+   ```
 
-[![Stisla Preview](https://camo.githubusercontent.com/2135e0f6544a7286a3412cdc3df32d47fc91b045/68747470733a2f2f692e6962622e636f2f3674646d6358302f323031382d31312d31312d31352d33352d676574737469736c612d636f6d2e706e67)](https://getstisla.com)
+   Gantilah `username` dengan nama pengguna GitHub Anda dan `nama-repositori` dengan nama repositori yang telah Anda fork.
 
-## Table of Contents
+3. **Buat branch** baru untuk melakukan perubahan. Gunakan nama branch yang deskriptif yang menggambarkan perubahan yang akan Anda lakukan. Misalnya:
 
-- [Table of Contents](#table-of-contents)
-- [Quick start](#quick-start)
-- [License](#license)
-- [Supports](#supports)
+   ```bash
+   git checkout -b perbaikan-fitur
+   ```
 
-## Quick start
+   Gantilah `perbaikan-fitur` dengan nama branch yang sesuai.
 
-Several quick start options are available:
+4. **Lakukan perubahan** pada kode sumber sesuai dengan kontribusi yang Anda inginkan.
+5. **Commit** perubahan Anda dengan pesan yang jelas dan deskriptif. Contoh:
 
--   Clone the repo: `git clone https://github.com/edikurniawan-dev/laravel-stisla.git`
--   Run `cd` to the newly created `/laravel-stisla` directory
--   Run `composer install` command
--   Run `npm install` command
--   Run `npm run dev` command
--   Run `cp .env.example .env` command
--   Run `php artisan key:generate` command
--   Run `php artisan serve` command
--   Done
+   ```bash
+   git commit -m "Menambahkan fitur baru"
+   ```
 
-Read the [documentation page](https://getstisla.com/docs) for more information on the framework contents, templates and examples, and more.
+6. **Push** branch yang telah Anda buat ke repositori GitHub Anda:
 
-## License
+   ```bash
+   git push origin nama-branch
+   ```
 
-**Stisla** is licensed under the [MIT License](LICENSE)
+   Gantilah `nama-branch` dengan nama branch yang telah Anda buat.
 
-## Supports
+7. Buat **Pull Request** (PR) dengan menjelaskan perubahan yang Anda lakukan. Pastikan untuk memberikan deskripsi yang jelas dan rinci mengenai kontribusi Anda.
 
-Thanks to BrowserStack for their support on this open-source project!
+Setelah Anda mengirimkan PR, tim pengembang akan meninjau kontribusi Anda. Jika ada perbaikan yang diperlukan atau perubahan tambahan yang dianjurkan, kami akan memberikan umpan balik dan bekerja sama dengan Anda untuk meningkatkan kontribusi Anda.
 
-<a href="https://www.browserstack.com">
-  <img src="https://getstisla.com/svg/Browserstack-logo.svg" alt="BrowserStack" width="250">
-</a>
+Terima kasih atas partisipasi Anda dalam proyek GAMI!
 
----
 
-Stisla is created by [Nauval](http://nauv.al) ([Twitter](https://twitter.com/mhdnauvalazhar)). You can support the author by donation [here](https://www.buymeacoffee.com/mhd).
+## `Executive_Dashboard_Controller@index`
+
+Metode `index` pada kelas `Executive_Dashboard_Controller` bertugas untuk merender tampilan dashboard eksekutif dengan berbagai data statistik. Metode ini melakukan operasi-operasi berikut:
+
+1. Mengambil tanggal saat ini dan tanggal sebelumnya menggunakan library Carbon.
+2. Menghitung total penjualan pada hari sebelumnya, minggu sebelumnya, bulan sebelumnya, dan tahun sebelumnya dengan melakukan query pada model `Transaction`.
+3. Menghitung jumlah penjualan pada hari ini, minggu ini, bulan ini, dan tahun ini menggunakan pendekatan yang sama seperti pada langkah 2.
+4. Menghitung persentase perubahan penjualan untuk setiap periode dibandingkan dengan periode sebelumnya yang sesuai.
+5. Menghitung total jumlah penjualan dari seluruh transaksi.
+6. Menghitung nilai transaksi rata-rata dengan membagi total jumlah penjualan dengan jumlah transaksi.
+7. Mengambil data rating dari tabel `reviews`.
+8. Memanggil fungsi `calculateCustomerSatisfaction` untuk menghitung skor kepuasan pelanggan berdasarkan data rating.
+9. Menyampaikan semua data yang dihitung dan variabel lain yang diperlukan ke tampilan `dashboard-general-dashboard` untuk dirender.
+
+### Tanda Metode
+
+```php
+public function index()
+```
+
+### Parameter
+
+Metode ini tidak menerima parameter apapun.
+
+### Nilai Kembalian
+
+Metode ini mengembalikan sebuah instance dari kelas `Illuminate\View\View`, yang mewakili tampilan yang telah dirender.
+
+### Contoh Penggunaan
+
+```php
+$controller = new Executive_Dashboard_Controller();
+$response = $controller->index();
+```
+
+Harap dicatat bahwa dokumentasi yang diberikan mengasumsikan bahwa dependensi dan model yang diperlukan telah diimpor dan disiapkan dengan benar.
