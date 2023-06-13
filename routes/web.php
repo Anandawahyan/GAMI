@@ -23,12 +23,13 @@ Route::get('/register', function() {
 
 //Api
 Route::get('/admin/sales', [Admin_Dashboard_Controller::class, 'getSalesForChart']);
-
-//Api
 Route::get('/executive/chart', [Executive_Dashboard_Controller::class, 'get_chart_contents']);
+Route::get('/executive/analysis/marketing', [Executive_Dashboard_Controller::class, 'get_marketing_analysis']);
+Route::get('/executive/analysis/rfm', [Executive_Dashboard_Controller::class, 'get_rfm_analysis']);
+Route::get('/executive/analysis/review', [Executive_Dashboard_Controller::class, 'get_review_analysis']);
 
 // Dashboard
-Route::get('/dashboard-general-dashboard', [Executive_Dashboard_Controller::class, 'index']);
+Route::get('/executive/dashboard', [Executive_Dashboard_Controller::class, 'index']);
 
 Route::get('/admin/dashboard', 'App\Http\Controllers\Admin_Dashboard_Controller@index')->name('dashboard.index');
 

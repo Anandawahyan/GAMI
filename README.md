@@ -60,7 +60,7 @@ Daftar isi :
 
 ### `Executive_Dashboard_Controller`
 
-#### `index`
+### `index()`
 
 Metode `index` pada kelas `Executive_Dashboard_Controller` bertugas untuk merender tampilan dashboard eksekutif dengan berbagai data statistik. Metode ini melakukan operasi-operasi berikut:
 
@@ -74,25 +74,65 @@ Metode `index` pada kelas `Executive_Dashboard_Controller` bertugas untuk merend
 8. Memanggil fungsi `calculateCustomerSatisfaction` untuk menghitung skor kepuasan pelanggan berdasarkan data rating.
 9. Menyampaikan semua data yang dihitung dan variabel lain yang diperlukan ke tampilan `dashboard-general-dashboard` untuk dirender.
 
-##### Tanda Metode
+#### Tanda Metode
 
 ```php
 public function index()
 ```
 
-##### Parameter
+#### Parameter
 
 Metode ini tidak menerima parameter apapun.
 
-##### Nilai Kembalian
+#### Nilai Kembalian
 
 Metode ini mengembalikan sebuah instance dari kelas `Illuminate\View\View`, yang mewakili tampilan yang telah dirender.
 
-##### Contoh Penggunaan
+#### Contoh Penggunaan
 
 ```php
 $controller = new Executive_Dashboard_Controller();
 $response = $controller->index();
 ```
 
-Harap dicatat bahwa dokumentasi yang diberikan mengasumsikan bahwa dependensi dan model yang diperlukan telah diimpor dan disiapkan dengan benar.
+Berikut adalah dokumentasi untuk fungsi `get_marketing_analysis()`:
+
+### `get_marketing_analysis()`
+
+Fungsi ini digunakan untuk memperoleh analisis pemasaran berdasarkan data transaksi dan data stok yang diberikan. Fungsi ini menggunakan API OpenAI untuk menghasilkan analisis pemasaran berdasarkan data yang diberikan.
+
+#### Parameter
+
+Fungsi ini tidak menerima parameter apa pun.
+
+#### Hasil yang Dikembalikan
+
+Fungsi ini mengembalikan respons dari API OpenAI yang berisi hasil analisis pemasaran yang dihasilkan.
+
+Berikut adalah dokumentasi untuk fungsi `get_rfm_analysis()`:
+
+### `get_rfm_analysis()`
+
+Fungsi ini digunakan untuk melakukan analisis RFM (Recency, Frequency, Monetary) berdasarkan data transaksi yang ada. Fungsi ini menggunakan data transaksi untuk menghitung skor RFM, kemudian mengirimkan data tersebut ke API OpenAI untuk meminta analisis lebih lanjut.
+
+#### Parameter
+
+Fungsi ini tidak menerima parameter apa pun.
+
+#### Hasil yang Dikembalikan
+
+Fungsi ini mengembalikan respons dari API OpenAI yang berisi hasil analisis berdasarkan data RFM yang diberikan.
+
+Berikut adalah dokumentasi untuk fungsi `get_review_analysis()`:
+
+### `get_review_analysis()`
+
+Fungsi ini digunakan untuk menganalisis data ulasan pelanggan yang tersedia dalam tabel `reviews`. Fungsi ini menggunakan data ulasan untuk menghasilkan kesimpulan tentang apa yang dipikirkan pelanggan mengenai produk-produk Anda. Fungsi ini mengirimkan data ulasan ke API OpenAI untuk meminta analisis lebih lanjut.
+
+#### Parameter
+
+Fungsi ini tidak menerima parameter apa pun.
+
+#### Hasil yang Dikembalikan
+
+Fungsi ini mengembalikan respons dari API OpenAI yang berisi hasil analisis berdasarkan data ulasan yang diberikan.

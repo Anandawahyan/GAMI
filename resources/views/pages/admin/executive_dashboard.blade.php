@@ -139,7 +139,7 @@
             </div>
             <h2 class="h3 text-primary" style="font-weight: bold;">Customer Segmentation Section</h2>
             <div class="row">
-                <div class="col-12 col-md-7 col-lg-7">
+                <div class="col-12 col-md-6 col-lg-6">
                     <div class="card">
                         <div class="card-header">
                             <h4>Customer by Gender</h4>
@@ -149,7 +149,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-12 col-md-5 col-lg-5">
+                <div class="col-12 col-md-6 col-lg-6">
                     <div class="card">
                         <div class="card-header">
                             <h4>Customer by Age Group</h4>
@@ -158,6 +158,59 @@
                             <canvas id="myChart5"></canvas>
                         </div>
                     </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>Customer Segment based on RFM</h4>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="myChart6"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>Customer Segment based on Total Spending</h4>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="myChart7"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h2 class="h3 text-primary" style="font-weight: bold;"> Analysis</h2>
+            <div class="row">
+                <div class="col-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Marketing Analysis</h4>
+                    </div>
+                    <div class="card-body">
+                        <p style="font-size: 16px" class="marketing-analysis">Please wait...</p>
+                    </div>
+                </div>
+                </div>
+                <div class="col-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Customer RFM Analysis</h4>
+                    </div>
+                    <div class="card-body">
+                        <p style="font-size: 16px" class="rfm-analysis">Please wait...</p>
+                    </div>
+                </div>
+                </div>
+                <div class="col-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Product Review Analysis</h4>
+                    </div>
+                    <div class="card-body">
+                        <p style="font-size: 16px" class="review-analysis">Please wait...</p>
+                    </div>
+                </div>
                 </div>
             </div>
                 </div>

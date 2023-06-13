@@ -39,7 +39,7 @@ class Executive_Dashboard_Controller extends Controller
         $satisfactionScore = $this->calculateCustomerSatisfaction($ratingData);
 
 
-        return view('pages.dashboard-general-dashboard',
+        return view('pages.admin.executive_dashboard',
         [
             'retention_rate'=>$this->calculateRetentionRate(),
             'sales_per_period_percentage'=>$sales_per_period_percentage,
@@ -75,6 +75,148 @@ class Executive_Dashboard_Controller extends Controller
         return $satisfactionScore;
     }
 
+    public function get_marketing_analysis()
+    {
+        $transaction_data = $this->getTransactionData();
+        $stock_data = $this->getStockData();
+        $payload = [
+            'model' => 'text-davinci-003',
+            'prompt' => $transaction_data.'based on this data, can you give me a marketing analysis like what would be the best selling items based on demographics data. Focus on like what gender should i approach? what age should i approach? make it simple and ONLY use 1 paragraph. At the end give me a suggestion on what should i do, IF in my inventory data is like this :\n'.$stock_data,
+            'temperature' => 0.05,
+            'max_tokens' => 256,
+            'top_p' => 1,
+            'frequency_penalty' => 0,
+            'presence_penalty' => 0,
+        ];
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer'.' '.env('OPENAI_API_KEY'),
+            'Content-Type' => 'application/json',
+        ])->post('https://api.openai.com/v1/completions', $payload);
+
+        return $response;
+    }
+
+    public function get_rfm_analysis() {
+        $rfmScores = DB::table('transactions')
+            ->select('buyer_id', DB::raw('DATEDIFF(MAX(transaction_date), CURDATE()) AS recency'), DB::raw('COUNT(*) AS frequency'), DB::raw('SUM(amount) AS monetary_value'))
+            ->groupBy('buyer_id')
+            ->get();
+        
+            $header = 'buyer_id,recency,frequency,monetary_value';
+
+            $rows = $rfmScores->map(function ($result) {
+                return implode(',', [
+                    $result->buyer_id,
+                    $result->recency,
+                    $result->frequency,
+                    $result->monetary_value,
+                ]);
+            })->join("\n");
+    
+            $output = $header . "\n" . $rows;
+
+            $payload = [
+                'model' => 'text-davinci-003',
+                'prompt' => $output . 'based on this data, can you give me an analysis like what can i do  based on demographics data. Focus on like what would be the best option for me to leverage my business, make it simple and ONLY use 1 paragraph.(the monetary_value is in rupiah)',
+                'temperature' => 0.01,
+                'max_tokens' => 256,
+                'top_p' => 1,
+                'frequency_penalty' => 0,
+                'presence_penalty' => 0,
+            ];
+    
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer'.' '.env('OPENAI_API_KEY'),
+                'Content-Type' => 'application/json',
+            ])->post('https://api.openai.com/v1/completions', $payload);
+    
+            return $response;
+    }
+
+    public function get_review_analysis() {
+            $reviews = DB::table('reviews')->select('review_text')->get();
+
+            $payload = [
+                'model' => 'text-davinci-001',
+                'prompt' => json_encode($reviews) . 'write a conclusion about this review text data, i want to know what is my customers thinking about my products, Focus on what should i improve based on it. make it simple and ONLY use 1 paragraph.',
+                'temperature' => 0.01,
+                'max_tokens' => 256,
+                'top_p' => 1,
+                'frequency_penalty' => 0,
+                'presence_penalty' => 0,
+            ];
+    
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer'.' '.env('OPENAI_API_KEY'),
+                'Content-Type' => 'application/json',
+            ])->post('https://api.openai.com/v1/completions', $payload);
+    
+            return $response;
+    }
+
+    function getTransactionData() {
+        $result = DB::table('users')
+        ->join('transactions', 'users.id', '=', 'transactions.buyer_id')
+        ->join('items', 'transactions.item_id', '=', 'items.id')
+        ->join('colors', 'colors.id', '=', 'items.color_id')
+        ->join('categories', 'categories.id', '=', 'items.category_id')
+        ->select('users.sex as user_sex', 'colors.name as color', 'categories.name as category_name', 'transactions.amount as transaction_amount', 'items.sex as item_for', 'users.birth_date as user_birth_date')
+        ->get();
+
+        $header = 'user_sex,name,color,category_name,transaction_amount,item_sex,user_birth_date';
+
+        // Create the data rows
+        $rows = $result->map(function ($result) {
+            return implode(',', [
+                $result->user_sex,
+                $result->color,
+                $result->category_name,
+                $result->transaction_amount,
+                $result->item_for,
+                $result->user_birth_date,
+            ]);
+        })->join("\n");
+
+        $output = $header . "\n" . $rows;
+        return $output;
+    }
+
+    public function getStockData() {
+        $category_stock = DB::table('items')->join('categories', 'items.category_id', '=', 'categories.id')
+        ->select('categories.name as category_name', DB::raw('COUNT(*) as stock'))
+        ->where('items.is_sold','=',0)
+        ->groupBy('categories.name')
+        ->get();
+
+        $item_sex_stock = DB::table('items')->select('sex as item_sex_name', DB::raw('COUNT(*) as stock'))
+        ->where('is_sold', 0)
+        ->groupBy('sex')
+        ->get();
+    
+
+        $header_category = 'category_name, stock';
+        $header_item_sex = 'category_name, stock';
+
+        // Create the data rows
+        $category_rows = $category_stock->map(function ($result) {
+            return implode(',', [
+                $result->category_name,
+                $result->stock
+            ]);
+        })->join("\n");
+
+        $item_sex_rows = $item_sex_stock->map(function ($result) {
+            return implode(',', [
+                $result->item_sex_name,
+                $result->stock
+            ]);
+        })->join("\n");
+
+        $output = $header_category . "\n" . $category_rows . "\n and the item sex type data\n" . $header_item_sex . "\n" . $item_sex_rows;
+        return $output;
+    }
+
     public function get_chart_contents() {
         $m = new \Moment\Moment('');
         $m = $m->format('Y-m-d');
@@ -100,6 +242,8 @@ class Executive_Dashboard_Controller extends Controller
         $response['data']['menWomenDemographicData'] = $men_women_demographic;
         $response['data']['ageGroupMale'] = $this->get_age_group_differsBy_sex('Laki-laki');
         $response['data']['ageGroupFemale'] = $this->get_age_group_differsBy_sex('Perempuan');
+        $response['data']['RFMGroupingCustomers'] = $this->get_spending_segmentation();
+        $response['data']['totalSpendingCategoryData'] = $this->get_total_spending_segmentation();
         return response()->json($response);
     }
 
@@ -202,6 +346,60 @@ class Executive_Dashboard_Controller extends Controller
 
         return $results;
                 
+    }
+
+    function get_spending_segmentation() {
+        
+        $rfmScores = DB::table('transactions')
+            ->select('buyer_id', DB::raw('DATEDIFF(MAX(transaction_date), CURDATE()) AS recency'), DB::raw('COUNT(*) AS frequency'), DB::raw('SUM(amount) AS monetary_value'))
+            ->groupBy('buyer_id')
+            ->get();
+
+        // Group the RFM scores into segments
+        $customerSegments = $rfmScores->groupBy(function ($rfm) {
+            if ($rfm->recency >= -30 && $rfm->frequency >= 5 && $rfm->monetary_value >= 100) {
+                return 'High-Value Customers';
+            }  elseif ($rfm->recency < -30 && $rfm->frequency >= 5 && $rfm->monetary_value < 100) {
+                return 'Loyal Customers';
+            } elseif ($rfm->recency < -30 && $rfm->frequency < 5 && $rfm->monetary_value >= 100) {
+                return 'High-Spending Customers';
+            } else {
+                return 'Standard Customers';
+            }
+        });
+
+        // Retrieve the customer counts per category
+        $customerCounts = $customerSegments->map(function ($segment) {
+            return $segment->count();
+        });
+
+        $result = $customerSegments->mapWithKeys(function ($segment, $key) {
+            return [$key => $segment->count()];
+        })->all();        
+
+        return $result;
+    }
+
+    function get_total_spending_segmentation() {
+        
+        $result = DB::table(function ($subquery) {
+            $subquery->select('u.id as user_id', 'u.name as user_name', DB::raw('SUM(t.amount) as total_spending'))
+                ->from('users as u')
+                ->join('transactions as t', 'u.id', '=', 't.buyer_id')
+                ->groupBy('u.id', 'u.name');
+        }, 'subquery')
+            ->selectRaw('
+                CASE 
+                    WHEN total_spending <= 120000 THEN "Low Spender"
+                    WHEN total_spending > 120000 AND total_spending <= 500000 THEN "Moderate Spender"
+                    WHEN total_spending > 500000 THEN "High Spender"
+                END AS spending_category,
+                COUNT(*) AS customer_count'
+            )
+            ->groupBy('spending_category')
+            ->get();   
+
+        return $result;
     }
 
 }

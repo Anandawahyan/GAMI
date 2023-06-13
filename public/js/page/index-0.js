@@ -5,6 +5,8 @@ var top_selling_categories_colors_chart = document.getElementById("myChart2").ge
 var customerRetentionRateChart = document.getElementById("myChart3").getContext('2d');
 var men_women_demographic = document.getElementById("myChart4").getContext('2d');
 var age_group_chart = document.getElementById("myChart5").getContext('2d');
+var rfm_section_chart = document.getElementById("myChart6").getContext('2d');
+var total_spending_category_chart = document.getElementById("myChart7").getContext('2d');
 let delayed;
 
 
@@ -20,8 +22,9 @@ $.ajax({
       menWomenDemographicData,
       ageGroupMale,
       ageGroupFemale,
+      RFMGroupingCustomers,
+      totalSpendingCategoryData
      } = response.data;
-     console.log(ageGroupMale)
     var myChart = new Chart(statistics_chart, {
       type: 'line',
       data: {
@@ -69,7 +72,6 @@ $.ajax({
       data: {
          labels: categories.map(c => c.name), 
          datasets: topSellingCategoriesColorsChartContent.map(color => {
-          console.log(color.array_per_category);
           return {
             label: color.color,
             data: color.array_per_category,
@@ -174,48 +176,90 @@ var ageGroupChart = new Chart(age_group_chart, {
      }
   }
 });
+    var RfmSectionChart = new Chart(rfm_section_chart, {
+      type: 'pie',
+      data: {
+        datasets: [{
+          data: Object.values(RFMGroupingCustomers),
+          backgroundColor: [
+            '#9AC5F4',
+            '#F1C376',
+            '#F5EFE7'
+          ],
+          label: 'Dataset 1'
+        }],
+        labels: Object.keys(RFMGroupingCustomers),
+      },
+      options: {
+        responsive: true,
+        legend: {
+          position: 'bottom',
+        },
+      }
+    });
+    var totalSpendingChart = new Chart(total_spending_category_chart, {
+      type: "bar",
+    data: {
+      labels: totalSpendingCategoryData.map(category => category.spending_category),
+      datasets: [{
+        backgroundColor: [ '#9AC5F4','#F1C376','#F5EFE7'],
+        data: totalSpendingCategoryData.map(category => category.customer_count)
+      }]
+    },
+    options: {
+      legend: {display: false},
+      title: {
+        display: false,
+      },
+      scales: {
+        yAxes: [
+          {
+              gridLines: {
+                  // display: false,
+                  drawBorder: false,
+                  color: "#f2f2f2",
+              },
+              ticks: {
+                  beginAtZero: true,
+              },
+          },
+      ],
+      }
+    }
+   });
   },
   error: function(e) {
     console.log(e.responseText);
   }
 });
 
-
-
-$('#visitorMap').vectorMap(
-{
-  map: 'world_en',
-  backgroundColor: '#ffffff',
-  borderColor: '#f2f2f2',
-  borderOpacity: .8,
-  borderWidth: 1,
-  hoverColor: '#000',
-  hoverOpacity: .8,
-  color: '#ddd',
-  normalizeFunction: 'linear',
-  selectedRegions: false,
-  showTooltip: true,
-  pins: {
-    id: '<div class="jqvmap-circle"></div>',
-    my: '<div class="jqvmap-circle"></div>',
-    th: '<div class="jqvmap-circle"></div>',
-    sy: '<div class="jqvmap-circle"></div>',
-    eg: '<div class="jqvmap-circle"></div>',
-    ae: '<div class="jqvmap-circle"></div>',
-    nz: '<div class="jqvmap-circle"></div>',
-    tl: '<div class="jqvmap-circle"></div>',
-    ng: '<div class="jqvmap-circle"></div>',
-    si: '<div class="jqvmap-circle"></div>',
-    pa: '<div class="jqvmap-circle"></div>',
-    au: '<div class="jqvmap-circle"></div>',
-    ca: '<div class="jqvmap-circle"></div>',
-    tr: '<div class="jqvmap-circle"></div>',
-  },
+$.ajax({
+  url: '/executive/analysis/marketing',
+  type: 'get',
+  dataType: 'json',
+  success: function(response) {
+    $('.marketing-analysis').text(response.choices[0].text);
+  }
 });
 
-// weather
-getWeather();
-setInterval(getWeather, 600000);
+$.ajax({
+  url: '/executive/analysis/rfm',
+  type: 'get',
+  dataType: 'json',
+  success: function(response) {
+    $('.rfm-analysis').text(response.choices[0].text);
+  }
+});
+
+$.ajax({
+  url: '/executive/analysis/review',
+  type: 'get',
+  dataType: 'json',
+  success: function(response) {
+    $('.review-analysis').text(response.choices[0].text);
+  }
+});
+
 
 function getWeather() {
   $.simpleWeather({
