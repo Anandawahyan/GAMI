@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Order;
 use Carbon\Carbon;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
@@ -16,30 +17,30 @@ class Executive_Dashboard_Controller extends Controller
         $m_today = $m->format('Y-m-d');
         $m_yesterday = $m->subtractDays(1)->format('Y-m-d');
 
-        $sales_yesterday = Transaction::whereRaw('DATE(transaction_date) = DATE(?)',[$m_yesterday])->sum('amount');
-        $sales_prior_week = Transaction::whereRaw('WEEK(transaction_date) = WEEK(?)-1',[$m_yesterday])->sum('amount');
-        $sales_prior_month = Transaction::whereRaw('MONTH(transaction_date) = MONTH(?)-1',[$m_yesterday])->sum('amount');
-        $sales_prior_year = Transaction::whereRaw('YEAR(transaction_date) = YEAR(?)-1',[$m_yesterday])->sum('amount');
+        $sales_yesterday = Order::whereRaw('DATE(order_date) = DATE(?)',[$m_yesterday])->sum('total_amount');
+        $sales_prior_week = Order::whereRaw('WEEK(order_date) = WEEK(?)-1',[$m_yesterday])->sum('total_amount');
+        $sales_prior_month = Order::whereRaw('MONTH(order_date) = MONTH(?)-1',[$m_yesterday])->sum('total_amount');
+        $sales_prior_year = Order::whereRaw('YEAR(order_date) = YEAR(?)-1',[$m_yesterday])->sum('total_amount');
 
-        $sales_per_period['today'] = Transaction::whereRaw('DATE(transaction_date) = DATE(?)',[$m_today])->sum('amount');
-        $sales_per_period['week'] = Transaction::whereRaw('WEEK(transaction_date) = WEEK(?)',[$m_today])->sum('amount');
-        $sales_per_period['month'] = Transaction::whereRaw('MONTH(transaction_date) = MONTH(?)',[$m_today])->sum('amount');
-        $sales_per_period['year'] = Transaction::whereRaw('YEAR(transaction_date) = YEAR(?)',[$m_today])->sum('amount');
+        $sales_per_period['today'] = Order::whereRaw('DATE(order_date) = DATE(?)',[$m_today])->sum('total_amount');
+        $sales_per_period['week'] = Order::whereRaw('WEEK(order_date) = WEEK(?)',[$m_today])->sum('total_amount');
+        $sales_per_period['month'] = Order::whereRaw('MONTH(order_date) = MONTH(?)',[$m_today])->sum('total_amount');
+        $sales_per_period['year'] = Order::whereRaw('YEAR(order_date) = YEAR(?)',[$m_today])->sum('total_amount');
 
         $sales_per_period_percentage['today'] = $this->get_percentage($sales_per_period['today'], $sales_yesterday);
         $sales_per_period_percentage['week'] = $this->get_percentage($sales_per_period['week'], $sales_prior_week);
         $sales_per_period_percentage['month'] = $this->get_percentage($sales_per_period['month'], $sales_prior_month);
         $sales_per_period_percentage['year'] = $this->get_percentage($sales_per_period['year'], $sales_prior_year);
 
-        $totalSales = Transaction::sum('amount');
-        $transactionCount = Transaction::count();
+        $totalSales = Order::sum('total_amount');
+        $transactionCount = Order::count() == 0 ? 1 : Order::count();
         $averageTransactionValue = convertToRupiah($totalSales/$transactionCount);
         $ratingData = DB::table('reviews')->select('rating')->get();
 
         $satisfactionScore = $this->calculateCustomerSatisfaction($ratingData);
 
 
-        return view('pages.admin.executive_dashboard',
+        return view('pages.admin.dashboard-executive',
         [
             'retention_rate'=>$this->calculateRetentionRate(),
             'sales_per_period_percentage'=>$sales_per_period_percentage,
@@ -89,75 +90,76 @@ class Executive_Dashboard_Controller extends Controller
             'presence_penalty' => 0,
         ];
 
-        $response = Http::withHeaders([
+        $promise = Http::async()->withHeaders([
             'Authorization' => 'Bearer'.' '.env('OPENAI_API_KEY'),
             'Content-Type' => 'application/json',
-        ])->post('https://api.openai.com/v1/completions', $payload);
-
-        return $response;
+        ])->post('https://api.openai.com/v1/completions', $payload)->then(function ($response) {
+            return $response;
+        });;
     }
 
-    public function get_rfm_analysis() {
-        $rfmScores = DB::table('transactions')
-            ->select('buyer_id', DB::raw('DATEDIFF(MAX(transaction_date), CURDATE()) AS recency'), DB::raw('COUNT(*) AS frequency'), DB::raw('SUM(amount) AS monetary_value'))
-            ->groupBy('buyer_id')
-            ->get();
+    // public function get_rfm_analysis() {
+    //     $rfmScores = DB::table('orders')
+    //         ->select('buyer_id', DB::raw('DATEDIFF(MAX(order_date), CURDATE()) AS recency'), DB::raw('COUNT(*) AS frequency'), DB::raw('SUM(total_amount) AS monetary_value'))
+    //         ->groupBy('buyer_id')
+    //         ->get();
         
-            $header = 'buyer_id,recency,frequency,monetary_value';
+    //         $header = 'buyer_id,recency,frequency,monetary_value';
 
-            $rows = $rfmScores->map(function ($result) {
-                return implode(',', [
-                    $result->buyer_id,
-                    $result->recency,
-                    $result->frequency,
-                    $result->monetary_value,
-                ]);
-            })->join("\n");
+    //         $rows = $rfmScores->map(function ($result) {
+    //             return implode(',', [
+    //                 $result->buyer_id,
+    //                 $result->recency,
+    //                 $result->frequency,
+    //                 $result->monetary_value,
+    //             ]);
+    //         })->join("\n");
     
-            $output = $header . "\n" . $rows;
+    //         $output = $header . "\n" . $rows;
 
-            $payload = [
-                'model' => 'text-davinci-003',
-                'prompt' => $output . 'based on this data, can you give me an analysis like what can i do  based on demographics data. Focus on like what would be the best option for me to leverage my business, make it simple and ONLY use 1 paragraph.(the monetary_value is in rupiah)',
-                'temperature' => 0.01,
-                'max_tokens' => 256,
-                'top_p' => 1,
-                'frequency_penalty' => 0,
-                'presence_penalty' => 0,
-            ];
+    //         $payload = [
+    //             'model' => 'text-davinci-003',
+    //             'prompt' => $output . 'based on this data, can you give me an analysis like what can i do  based on demographics data. Focus on like what would be the best option for me to leverage my business, make it simple and ONLY use 1 paragraph.(the monetary_value is in rupiah)',
+    //             'temperature' => 0.01,
+    //             'max_tokens' => 256,
+    //             'top_p' => 1,
+    //             'frequency_penalty' => 0,
+    //             'presence_penalty' => 0,
+    //         ];
     
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer'.' '.env('OPENAI_API_KEY'),
-                'Content-Type' => 'application/json',
-            ])->post('https://api.openai.com/v1/completions', $payload);
+    //         $response = Http::async()->withHeaders([
+    //             'Authorization' => 'Bearer'.' '.env('OPENAI_API_KEY'),
+    //             'Content-Type' => 'application/json',
+    //         ])->post('https://api.openai.com/v1/completions', $payload);
     
-            return $response;
-    }
+    //         return $response;
+    // }
 
-    public function get_review_analysis() {
-            $reviews = DB::table('reviews')->select('review_text')->get();
+    // public function get_review_analysis() {
+    //         $reviews = DB::table('reviews')->select('review_text')->get();
 
-            $payload = [
-                'model' => 'text-davinci-001',
-                'prompt' => json_encode($reviews) . 'write a conclusion about this review text data, i want to know what is my customers thinking about my products, Focus on what should i improve based on it. make it simple and ONLY use 1 paragraph.',
-                'temperature' => 0.01,
-                'max_tokens' => 256,
-                'top_p' => 1,
-                'frequency_penalty' => 0,
-                'presence_penalty' => 0,
-            ];
+    //         $payload = [
+    //             'model' => 'text-davinci-001',
+    //             'prompt' => json_encode($reviews) . 'write a conclusion about this review text data, i want to know what is my customers thinking about my products, Focus on what should i improve based on it. make it simple and ONLY use 1 paragraph.',
+    //             'temperature' => 0.01,
+    //             'max_tokens' => 256,
+    //             'top_p' => 1,
+    //             'frequency_penalty' => 0,
+    //             'presence_penalty' => 0,
+    //         ];
     
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer'.' '.env('OPENAI_API_KEY'),
-                'Content-Type' => 'application/json',
-            ])->post('https://api.openai.com/v1/completions', $payload);
+    //         $response = Http::async()->withHeaders([
+    //             'Authorization' => 'Bearer'.' '.env('OPENAI_API_KEY'),
+    //             'Content-Type' => 'application/json',
+    //         ])->post('https://api.openai.com/v1/completions', $payload);
     
-            return $response;
-    }
+    //         return $response;
+    // }
 
     function getTransactionData() {
         $result = DB::table('users')
-        ->join('transactions', 'users.id', '=', 'transactions.buyer_id')
+        ->join('orders', 'users.id', '=', 'orders.buyer_id')
+        ->join('transactions','orders.id', '=', 'transactions.id')
         ->join('items', 'transactions.item_id', '=', 'items.id')
         ->join('colors', 'colors.id', '=', 'items.color_id')
         ->join('categories', 'categories.id', '=', 'items.category_id')
@@ -221,16 +223,16 @@ class Executive_Dashboard_Controller extends Controller
         $m = new \Moment\Moment('');
         $m = $m->format('Y-m-d');
 
-        $sales_by_chart_content = DB::table('transactions')
-        ->select(DB::raw('WEEK(transaction_date) AS week_start_date'), DB::raw('SUM(amount) AS total_amount'))
-        ->whereRaw('MONTH(transaction_date) = MONTH(?)',[$m])
+        $sales_by_chart_content = DB::table('orders')
+        ->select(DB::raw('WEEK(order_date) AS week_start_date'), DB::raw('SUM(total_amount) AS total_amount'))
+        ->whereRaw('MONTH(order_date) = MONTH(?)',[$m])
         ->groupBy('week_start_date')
         ->orderBy('week_start_date')
         ->get();
 
         $categories_and_colors_per_category = $this->get_colors_per_category();
 
-        $men_women_demographic = DB::table('users')->join('transactions', 'users.id', '=', 'transactions.buyer_id')
+        $men_women_demographic = DB::table('users')->join('orders', 'users.id', '=', 'orders.buyer_id')
         ->select('users.sex as JENIS KELAMIN', DB::raw('COUNT(*) as JUMLAH'))
         ->groupBy('users.sex')
         ->get();
@@ -265,21 +267,21 @@ class Executive_Dashboard_Controller extends Controller
         $retentionRateThisPeriod = 0;
 
         // Get the distinct buyer_ids for the current month
-        $currentMonthBuyers = Transaction::whereMonth('transaction_date', Carbon::now()->month)
-            ->whereYear('transaction_date', Carbon::now()->year)
+        $currentMonthBuyers = Order::whereMonth('order_date', Carbon::now()->month)
+            ->whereYear('order_date', Carbon::now()->year)
             ->distinct('buyer_id')
             ->pluck('buyer_id')
             ->toArray();
 
         // Get the distinct buyer_ids for the previous month
-        $previousMonthBuyers = Transaction::whereMonth('transaction_date', Carbon::now()->subMonth()->month)
-            ->whereYear('transaction_date', Carbon::now()->subMonth()->year)
+        $previousMonthBuyers = Order::whereMonth('order_date', Carbon::now()->subMonth()->month)
+            ->whereYear('order_date', Carbon::now()->subMonth()->year)
             ->distinct('buyer_id')
             ->pluck('buyer_id')
             ->toArray();
 
-        $twoMonthsAgoBuyers = Transaction::whereMonth('transaction_date', Carbon::now()->subMonths(2)->month)
-        ->whereYear('transaction_date', Carbon::now()->subMonths(2)->year)
+        $twoMonthsAgoBuyers = Order::whereMonth('order_date', Carbon::now()->subMonths(2)->month)
+        ->whereYear('order_date', Carbon::now()->subMonths(2)->year)
         ->distinct('buyer_id')
         ->pluck('buyer_id')
         ->toArray();
@@ -330,8 +332,8 @@ class Executive_Dashboard_Controller extends Controller
     }
 
     function get_age_group_differsBy_sex($sex) {
-        $results = DB::table('transactions')
-        ->join('users', 'users.id', '=', 'transactions.buyer_id')
+        $results = DB::table('orders')
+        ->join('users', 'users.id', '=', 'orders.buyer_id')
         ->where('users.sex', '=', $sex)
         ->selectRaw('
             CASE
@@ -339,7 +341,7 @@ class Executive_Dashboard_Controller extends Controller
                 WHEN TIMESTAMPDIFF(YEAR, users.birth_date, CURDATE()) BETWEEN 25 AND 34 THEN "25-34"
                 ELSE "35 and older"
             END AS age_group,
-            COUNT(DISTINCT transactions.buyer_id) AS customer_count
+            COUNT(DISTINCT orders.buyer_id) AS customer_count
         ')
         ->groupBy('age_group')
         ->get();
@@ -350,19 +352,21 @@ class Executive_Dashboard_Controller extends Controller
 
     function get_spending_segmentation() {
         
-        $rfmScores = DB::table('transactions')
-            ->select('buyer_id', DB::raw('DATEDIFF(MAX(transaction_date), CURDATE()) AS recency'), DB::raw('COUNT(*) AS frequency'), DB::raw('SUM(amount) AS monetary_value'))
+        $rfmScores = DB::table('orders')
+            ->select('buyer_id', DB::raw('DATEDIFF(MAX(order_date), CURDATE()) AS recency'), DB::raw('COUNT(*) AS frequency'), DB::raw('SUM(total_amount) AS monetary_value'))
             ->groupBy('buyer_id')
             ->get();
 
         // Group the RFM scores into segments
         $customerSegments = $rfmScores->groupBy(function ($rfm) {
-            if ($rfm->recency >= -30 && $rfm->frequency >= 5 && $rfm->monetary_value >= 100) {
+            if ($rfm->recency >= -30 && $rfm->frequency >= 5 && $rfm->monetary_value >= 150000) {
                 return 'High-Value Customers';
-            }  elseif ($rfm->recency < -30 && $rfm->frequency >= 5 && $rfm->monetary_value < 100) {
+            }  elseif ($rfm->recency < -30 && $rfm->frequency >= 5 && $rfm->monetary_value > 150000) {
                 return 'Loyal Customers';
-            } elseif ($rfm->recency < -30 && $rfm->frequency < 5 && $rfm->monetary_value >= 100) {
+            } elseif ($rfm->recency < -30 && $rfm->frequency < 5 && $rfm->monetary_value >= 300000) {
                 return 'High-Spending Customers';
+            } elseif ($rfm->recency > -10 && $rfm->frequency < 5 && $rfm->monetary_value < 150000) {
+                return 'Recent Customers';
             } else {
                 return 'Standard Customers';
             }
@@ -383,9 +387,9 @@ class Executive_Dashboard_Controller extends Controller
     function get_total_spending_segmentation() {
         
         $result = DB::table(function ($subquery) {
-            $subquery->select('u.id as user_id', 'u.name as user_name', DB::raw('SUM(t.amount) as total_spending'))
+            $subquery->select('u.id as user_id', 'u.name as user_name', DB::raw('SUM(o.total_amount) as total_spending'))
                 ->from('users as u')
-                ->join('transactions as t', 'u.id', '=', 't.buyer_id')
+                ->join('orders as o', 'u.id', '=', 'o.buyer_id')
                 ->groupBy('u.id', 'u.name');
         }, 'subquery')
             ->selectRaw('

@@ -16,3 +16,24 @@ if (!function_exists('convertDateToIndo')) {
         return $formattedDate;
     }
 }
+
+if (!function_exists('calculateDiskon')) {
+    function calculateDiskon($subtotal, $diskonPercentage)
+    {
+        if($diskonPercentage != null) {
+            $diskonInMoney = $subtotal * ($diskonPercentage/100);
+            return $diskonInMoney;
+        }
+        return 0;
+    }
+}
+
+if (!function_exists('calculatePriceAfter')) {
+    function calculatePriceAfter($subtotal, $diskon)
+    {
+        $diskonPrice = calculateDiskon($subtotal, $diskon);
+        return $subtotal - $diskonPrice;
+    }
+}
+
+

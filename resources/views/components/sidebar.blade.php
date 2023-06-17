@@ -7,18 +7,35 @@
             <a href="index.html">St</a>
         </div>
         <ul class="sidebar-menu">
-            <li class="menu-header">Dashboard</li>
             <li class="nav-item dropdown {{ $type_menu === 'dashboard' ? 'active' : '' }}">
                 <a href="#"
                     class="nav-link has-dropdown"><i class="fas fa-fire"></i><span>Dashboard</span></a>
                 <ul class="dropdown-menu">
-                    <li class='{{ Request::is('dashboard-general-dashboard') ? 'active' : '' }}'>
+                    <li class='{{ Request::is('executive/dashboard') ? 'active' : '' }}'>
                         <a class="nav-link"
-                            href="{{ url('dashboard-general-dashboard') }}">General Dashboard</a>
+                            href="{{ url('executive/dashboard') }}">General Dashboard</a>
                     </li>
                     <li class="{{ Request::is('admin/dashboard') ? 'active' : '' }}">
                         <a class="nav-link"
-                            href="{{ url('admin/dashboard') }}">Admin Dashboard</a>
+                            href="{{ route('dashboard.index') }}">Admin Dashboard</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-item dropdown {{ $type_menu === 'barang' ? 'active' : '' }}">
+                <a href="#"
+                    class="nav-link has-dropdown"><i class="fas fa-box-open"></i><span>Barang</span></a>
+                <ul class="dropdown-menu">
+                    <li class='{{ Request::is('admin/barang') ? 'active' : '' }}'>
+                        <a class="nav-link"
+                            href="{{ url('admin/barang') }}">Semua Barang</a>
+                    </li>
+                    <li class="{{ Request::is('admin/barang/create') ? 'active' : '' }}">
+                        <a class="nav-link"
+                            href="{{ url('admin/barang/create') }}">Tambah Barang</a>
+                    </li>
+                    <li class="{{ Request::is('admin/barang/sampah') ? 'active' : '' }}">
+                        <a class="nav-link"
+                            href="{{ url('admin/barang/sampah') }}">Sampah</a>
                     </li>
                 </ul>
             </li>

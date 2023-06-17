@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\Admin_Dashboard_Controller;
+use App\Http\Controllers\BarangController;
 use App\Http\Controllers\Executive_Dashboard_Controller;
+use App\Http\Controllers\OrderController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -28,11 +30,20 @@ Route::get('/executive/analysis/marketing', [Executive_Dashboard_Controller::cla
 Route::get('/executive/analysis/rfm', [Executive_Dashboard_Controller::class, 'get_rfm_analysis']);
 Route::get('/executive/analysis/review', [Executive_Dashboard_Controller::class, 'get_review_analysis']);
 
+Route::redirect('/admin','/admin/dashboard');
+
 // Dashboard
 Route::get('/executive/dashboard', [Executive_Dashboard_Controller::class, 'index']);
-
 Route::get('/admin/dashboard', 'App\Http\Controllers\Admin_Dashboard_Controller@index')->name('dashboard.index');
 
+
+//Resource
+Route::resource('admin/barang', BarangController::class);
+Route::post('admin/sampah/{barang}', [BarangController::class, 'to_trash'])->name('barang.to_trash');
+Route::get('/admin/sampah', [BarangController::class, 'sampah_index'])->name('barang.sampah_index');
+Route::put('/admin/sampah/{barang}', [BarangController::class, 'to_restore'])->name('barang.to_restore');
+Route::get('/admin/order', [OrderController::class, 'index'])->name('order.index');
+Route::get('/admin/order/{order}', [OrderController::class, 'show'])->name('order.detail');
 
 // Layout
 Route::get('/layout-default-layout', function () {

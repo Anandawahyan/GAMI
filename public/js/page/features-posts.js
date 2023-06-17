@@ -1,5 +1,6 @@
 "use strict";
 
+
 $("[data-checkboxes]").each(function() {
   var me = $(this),
     group = me.data('checkboxes'),
@@ -27,3 +28,4 @@ $("[data-checkboxes]").each(function() {
     }
   });
 });
+

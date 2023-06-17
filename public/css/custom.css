@@ -7,6 +7,29 @@
 
 /*# sourceMappingURL=custom.css.map */
 
-.chart-section-title {
-    color: color(srgb red green blue);
+table>thead>tr>th {
+    background-color: #9aa3e6 !important;
+    color: #fff !important;
+}
+
+table>thead {
+    width: 100% !important;
+}
+
+.dataTables_paginate {
+    display: flex !important;
+    min-width: 400px;
+    justify-content: end !important;
+    gap: 16px;;
+}
+
+.dataTables_paginate a {
+    display: block;
+    padding: 6px 9px !important;
+    color: #6777EF !important;
+    font-size: 16px;
+}
+
+.dataTables_paginate a span {
+    color: #6777EF !important;
 }

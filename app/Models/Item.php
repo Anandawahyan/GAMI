@@ -34,8 +34,10 @@ class Item extends Model
         'size',
         'region_of_origin',
         'category_id',
+        'sex',
         'color_id',
         'is_sold',
+        'is_deleted'
     ];
 
     /**
@@ -45,6 +47,7 @@ class Item extends Model
      */
     protected $casts = [
         'is_sold' => 'boolean',
+        'is_deleted'=>'boolean'
     ];
 
     /**

@@ -24,41 +24,21 @@
                             <div class="col-lg-12">
                                 <div class="invoice-title">
                                     <h2>Invoice</h2>
-                                    <div class="invoice-number">Order #12345</div>
+                                    <div class="invoice-number">Order #{{ $order->order_id }}</div>
                                 </div>
                                 <hr>
                                 <div class="row">
                                     <div class="col-md-6">
                                         <address>
-                                            <strong>Billed To:</strong><br>
-                                            Ujang Maman<br>
-                                            1234 Main<br>
-                                            Apt. 4B<br>
-                                            Bogor Barat, Indonesia
-                                        </address>
-                                    </div>
-                                    <div class="col-md-6 text-md-right">
-                                        <address>
                                             <strong>Shipped To:</strong><br>
-                                            Muhamad Nauval Azhar<br>
-                                            1234 Main<br>
-                                            Apt. 4B<br>
-                                            Bogor Barat, Indonesia
-                                        </address>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <address>
-                                            <strong>Payment Method:</strong><br>
-                                            Visa ending **** 4242<br>
-                                            ujang@maman.com
+                                            {{$order->name}}<br>
+                                            {{$order->address}}
                                         </address>
                                     </div>
                                     <div class="col-md-6 text-md-right">
                                         <address>
                                             <strong>Order Date:</strong><br>
-                                            September 19, 2018<br><br>
+                                            {{convertDateToIndo($order->date)}}<br><br>
                                         </address>
                                     </div>
                                 </div>
@@ -74,47 +54,31 @@
                                         <tr>
                                             <th data-width="40">#</th>
                                             <th>Item</th>
-                                            <th class="text-center">Price</th>
-                                            <th class="text-center">Quantity</th>
-                                            <th class="text-right">Totals</th>
+                                            <th class="text-right">Price</th>
                                         </tr>
+                                        @for ($i = 0; $i < count($items); $i++)
                                         <tr>
-                                            <td>1</td>
-                                            <td>Mouse Wireless</td>
-                                            <td class="text-center">$10.99</td>
-                                            <td class="text-center">1</td>
-                                            <td class="text-right">$10.99</td>
+                                            <td>{{ $i+1 }}</td>
+                                            <td>{{ $items[$i]->name }}</td>
+                                            <td class="text-right">{{ convertToRupiah($items[$i]->price) }}</td>
                                         </tr>
-                                        <tr>
-                                            <td>2</td>
-                                            <td>Keyboard Wireless</td>
-                                            <td class="text-center">$20.00</td>
-                                            <td class="text-center">3</td>
-                                            <td class="text-right">$60.00</td>
-                                        </tr>
-                                        <tr>
-                                            <td>3</td>
-                                            <td>Headphone Blitz TDR-3000</td>
-                                            <td class="text-center">$600.00</td>
-                                            <td class="text-center">1</td>
-                                            <td class="text-right">$600.00</td>
-                                        </tr>
+                                        @endfor
                                     </table>
                                 </div>
                                 <div class="row mt-4">
                                     <div class="col-12 text-right">
                                         <div class="invoice-detail-item">
                                             <div class="invoice-detail-name">Subtotal</div>
-                                            <div class="invoice-detail-value">$670.99</div>
+                                            <div class="invoice-detail-value">{{ convertToRupiah($subtotal) }}</div>
                                         </div>
                                         <div class="invoice-detail-item">
                                             <div class="invoice-detail-name">Diskon</div>
-                                            <div class="invoice-detail-value">$15</div>
+                                            <div class="invoice-detail-value">{{ convertToRupiah(calculateDiskon($subtotal, $order->diskon)) }}</div>
                                         </div>
                                         <hr class="mt-2 mb-2">
                                         <div class="invoice-detail-item">
                                             <div class="invoice-detail-name">Total</div>
-                                            <div class="invoice-detail-value invoice-detail-value-lg">$685.99</div>
+                                            <div class="invoice-detail-value invoice-detail-value-lg">{{ convertToRupiah(calculatePriceAfter($subtotal, $order->diskon)) }}</div>
                                         </div>
                                     </div>
                                 </div>
