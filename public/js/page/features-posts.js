@@ -29,3 +29,37 @@ $("[data-checkboxes]").each(function() {
   });
 });
 
+$(document).ready( function () {
+  moment.locale('id')
+  $.fn.dataTable.moment("ddd, D-MMM-YY");
+  var table = $('#table-1').DataTable( {
+      "dom": 'lrtip',
+      "scrollX": false,
+      columnDefs: [{
+          target: 3, //index of column
+      }],
+      order: [[3, 'desc']],
+  } );
+
+  table.columns.adjust().draw();
+  
+  $('#table-search').on( 'keyup click', function () {
+      table.search($('#table-search').val()).draw();
+  } );
+  });
+
+  $('#buttonHapus').on('click', function() {
+  swal({
+      title: 'Apakah kamu yakin menghapus semua?',
+      text: 'Setelah dihapus, Kamu tidak akan bisa merestore itemnya loh!',
+      icon: 'warning',
+      buttons: true,
+      dangerMode: true,
+  })
+  .then((willDelete) => {
+      if (willDelete) {
+      $('#formToDelete').trigger('submit');
+      }
+  });
+  });
+

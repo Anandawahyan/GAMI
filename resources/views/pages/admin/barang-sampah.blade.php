@@ -137,6 +137,7 @@
     {{-- <script src="{{ asset() }}"></script> --}}
     {{-- <script src="{{ asset() }}"></script> --}}
     <script src="{{ asset('library/jquery-ui-dist/jquery-ui.min.js') }}"></script>
+    <script src="https://cdn.datatables.net/plug-ins/1.10.19/sorting/datetime-moment.js" type="text/javascript"></script>
 
     <!-- Page Specific JS File -->
     <script src="{{ asset('js/page/features-posts.js') }}"></script>

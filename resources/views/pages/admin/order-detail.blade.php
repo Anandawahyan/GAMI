@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Invoice')
+@section('title', 'Order')
 
 @push('style')
     <!-- CSS Libraries -->
@@ -10,10 +10,11 @@
     <div class="main-content">
         <section class="section">
             <div class="section-header">
-                <h1>Invoice</h1>
+                <h1>Order</h1>
                 <div class="section-header-breadcrumb">
-                    <div class="breadcrumb-item active"><a href="#">Dashboard</a></div>
-                    <div class="breadcrumb-item">Invoice</div>
+                    <div class="breadcrumb-item active"><a href="/admin">Dashboard</a></div>
+                    <div class="breadcrumb-item"><a href="/admin/order">Order</a></div>
+                    <div class="breadcrumb-item">Order #{{ $order->order_id }}</div>
                 </div>
             </div>
 
@@ -23,7 +24,7 @@
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="invoice-title">
-                                    <h2>Invoice</h2>
+                                    <h2>Order</h2>
                                     <div class="invoice-number">Order #{{ $order->order_id }}</div>
                                 </div>
                                 <hr>
@@ -87,11 +88,23 @@
                     </div>
                     <hr>
                     <div class="text-md-left">
+                        <form id="formChangeStatus" action="{{ route('order.update',$order->order_id) }}" method="POST">
+                            @csrf
+                            @method('PUT')
+                            <input id="statusInput" type="hidden" name="status" value="">
                         <div class="mb-3">
-                            <button id="buttonTolak" type="submit" class="btn btn-danger btn-icon icon-left">Tolak Barang</button>
-                            <button id="buttonKirim" type="submit" class="btn btn-primary icon-left">Kirim Barang</button>
-                            <button id="buttonTerima" type="submit" class="btn btn-success icon-left">Barang telah diterima</button>
+                            @if($order->status == 1)
+                                <button id="buttonBatal" type="button" class="btn btn-danger btn-icon icon-left">Batalkan Pesanan</button>
+                                <button id="buttonKirim" type="button" class="btn btn-primary icon-left">Kirim Pesanan</button>
+                            @elseif($order->status == 2)
+                                <p class="fs-3">Pesanan telah selesai, pesanan dibatalkan</p>
+                            @elseif($order->status == 3)
+                                <button type="button" id="buttonTerima" class="btn btn-success icon-left">Selesaikan Pesanan</button>
+                            @else
+                                <p class="fs-3">Pesanan telah selesai, pesanan telah diterima oleh kustomer</p>
+                            @endif
                         </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -103,4 +116,20 @@
     <!-- JS Libraies -->
 
     <!-- Page Specific JS File -->
+    <script>
+        $('#buttonBatal').on('click', function() {
+            $('#statusInput').val('2');
+            $('#formChangeStatus').trigger('submit');
+        });
+
+        $('#buttonKirim').on('click', function() {
+            $('#statusInput').val('3');
+            $('#formChangeStatus').trigger('submit');
+        });
+
+        $('#buttonTerima').on('click', function() {
+            $('#statusInput').val('4');
+            $('#formChangeStatus').trigger('submit');
+        });
+    </script>
 @endpush

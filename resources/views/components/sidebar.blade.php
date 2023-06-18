@@ -33,9 +33,9 @@
                         <a class="nav-link"
                             href="{{ url('admin/barang/create') }}">Tambah Barang</a>
                     </li>
-                    <li class="{{ Request::is('admin/barang/sampah') ? 'active' : '' }}">
+                    <li class="{{ Request::is('admin/sampah') ? 'active' : '' }}">
                         <a class="nav-link"
-                            href="{{ url('admin/barang/sampah') }}">Sampah</a>
+                            href="{{ url('admin/sampah') }}">Sampah</a>
                     </li>
                 </ul>
             </li>

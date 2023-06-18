@@ -126,7 +126,7 @@ class BarangController extends Controller
             $image->storeAs('public/img/itemImages', $image->hashName());
 
             //delete old image
-            Storage::delete('public/img/itemImages'.$barang->image);
+            Storage::delete('public/img/itemImages'.$barang->image_url);
 
             //update barang with new image
             $barang->update([
@@ -184,7 +184,7 @@ class BarangController extends Controller
     public function destroy(Item $barang)
     {
         //delete image
-        Storage::delete('public/img/itemImages/'. $barang->image);
+        Storage::delete('public/img/itemImages/'. $barang->image_url);
 
         //delete post
         $barang->delete();

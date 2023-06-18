@@ -41,4 +41,12 @@ class OrderController extends Controller
 
         return view('pages.admin.order-detail', ['type_menu'=>'','order'=>$order[0],'items'=>$listOfItems, 'subtotal'=>$subtotal]);
     }
+
+    public function update(Request $request, Order $order) {
+        $order->update([
+            'status_id'=>$request->status
+        ]);
+
+        return redirect()->route('order.detail', $order->id);
+    }
 }

@@ -39,11 +39,16 @@ Route::get('/admin/dashboard', 'App\Http\Controllers\Admin_Dashboard_Controller@
 
 //Resource
 Route::resource('admin/barang', BarangController::class);
+
+//Sampah
 Route::post('admin/sampah/{barang}', [BarangController::class, 'to_trash'])->name('barang.to_trash');
 Route::get('/admin/sampah', [BarangController::class, 'sampah_index'])->name('barang.sampah_index');
 Route::put('/admin/sampah/{barang}', [BarangController::class, 'to_restore'])->name('barang.to_restore');
+
+//Order
 Route::get('/admin/order', [OrderController::class, 'index'])->name('order.index');
 Route::get('/admin/order/{order}', [OrderController::class, 'show'])->name('order.detail');
+Route::put('/admin/order/{order}', [OrderController::class, 'update'])->name('order.update');
 
 // Layout
 Route::get('/layout-default-layout', function () {

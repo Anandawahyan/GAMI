@@ -146,4 +146,5 @@
     <!-- Page Specific JS File -->
     <script src="{{ asset('js/page/features-posts.js') }}"></script>
     <script src="{{ asset('js/page/modules-ion-icons.js') }}"></script>
+    <script src="https://cdn.datatables.net/plug-ins/1.10.19/sorting/datetime-moment.js" type="text/javascript"></script>
 @endpush
