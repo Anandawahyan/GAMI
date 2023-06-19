@@ -50,7 +50,7 @@ $(document).ready( function () {
 
   $('#buttonHapus').on('click', function() {
   swal({
-      title: 'Apakah kamu yakin menghapus semua?',
+      title: 'Apakah kamu yakin menghapus item?',
       text: 'Setelah dihapus, Kamu tidak akan bisa merestore itemnya loh!',
       icon: 'warning',
       buttons: true,
@@ -59,6 +59,21 @@ $(document).ready( function () {
   .then((willDelete) => {
       if (willDelete) {
       $('#formToDelete').trigger('submit');
+      }
+  });
+  });
+
+  $('#buttonHapusSemua').on('click', function() {
+  swal({
+      title: 'Apakah kamu yakin menghapus semua?',
+      text: 'Setelah dihapus, Kamu tidak akan bisa merestore itemnya loh!',
+      icon: 'warning',
+      buttons: true,
+      dangerMode: true,
+  })
+  .then((willDelete) => {
+      if (willDelete) {
+      $('#hapusSemua').trigger('submit');
       }
   });
   });

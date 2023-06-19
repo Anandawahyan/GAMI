@@ -39,6 +39,16 @@
                     </li>
                 </ul>
             </li>
+            <li class="nav-item dropdown {{ $type_menu === 'order' ? 'active' : '' }}">
+                <a href="#"
+                    class="nav-link has-dropdown"><i class="fas fa-file-invoice-dollar"></i><span>Order</span></a>
+                <ul class="dropdown-menu">
+                    <li class='{{ Request::is('admin/order') ? 'active' : '' }}'>
+                        <a class="nav-link"
+                            href="{{ url('admin/order') }}">Semua Order</a>
+                    </li>
+                </ul>
+            </li>
             {{-- {{-- <li class="menu-header">Starter</li>
             <li class="nav-item dropdown {{ $type_menu === 'layout' ? 'active' : '' }}">
                 <a href="#"

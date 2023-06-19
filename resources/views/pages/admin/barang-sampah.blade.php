@@ -33,6 +33,29 @@
                                 <h4>Semua Barang</h4>
                             </div>
                             <div class="card-body">
+                                <div>
+                                    <form id="restoreSemua" class="d-inline" action="{{ route('barang.restore_all') }}" method="POST">
+                                        @csrf
+                                        <button type="submit"
+                                                    class="btn btn-success" id="buttonRestoreSemua" aria-label="restore all" {{ count($items) == 0 ? 'disabled' : '' }}>
+                                                    <i class="ion-refresh"
+                                                    data-pack="default"
+                                                    data-tags="detail"></i>
+                                                    Restore Semua
+                                                </button>
+                                    </form>
+                                    <form id="hapusSemua" class="d-inline" action="{{ route('barang.destroy_all') }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="button"
+                                                    class="btn btn-danger" id="buttonHapusSemua" aria-label="delete all" {{ count($items) == 0 ? 'disabled' : '' }}>
+                                                    <i class="ion-trash-b"
+                                                    data-pack="default"
+                                                    data-tags="detail"></i>
+                                                    Hapus Semua
+                                                </button>
+                                    </form>
+                                </div>
                                 <div class="float-right">
                                         <div class="input-group">
                                             <input type="text"
@@ -99,7 +122,7 @@
                                                 @csrf
                                                 @method('PUT')
                                                 <button type="submit"
-                                                    class="btn btn-success">
+                                                    class="btn btn-success"  aria-label="restore">
                                                     <i class="ion-refresh"
                                                     data-pack="default"
                                                     data-tags="delete"></i>
@@ -109,7 +132,7 @@
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="button"
-                                                    class="btn btn-danger" id="buttonHapus">
+                                                    class="btn btn-danger" id="buttonHapus" aria-label="delete">
                                                     <i class="ion-trash-b"
                                                     data-pack="default"
                                                     data-tags="detail"></i>

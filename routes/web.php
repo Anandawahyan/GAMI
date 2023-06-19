@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin_Dashboard_Controller;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\Executive_Dashboard_Controller;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\OrderController;
 use Illuminate\Support\Facades\Route;
 
@@ -43,12 +44,17 @@ Route::resource('admin/barang', BarangController::class);
 //Sampah
 Route::post('admin/sampah/{barang}', [BarangController::class, 'to_trash'])->name('barang.to_trash');
 Route::get('/admin/sampah', [BarangController::class, 'sampah_index'])->name('barang.sampah_index');
+Route::delete('/admin/sampah', [BarangController::class, 'destroy_all'])->name('barang.destroy_all');
+Route::post('/admin/sampah', [BarangController::class, 'restore_all'])->name('barang.restore_all');
 Route::put('/admin/sampah/{barang}', [BarangController::class, 'to_restore'])->name('barang.to_restore');
 
 //Order
 Route::get('/admin/order', [OrderController::class, 'index'])->name('order.index');
 Route::get('/admin/order/{order}', [OrderController::class, 'show'])->name('order.detail');
 Route::put('/admin/order/{order}', [OrderController::class, 'update'])->name('order.update');
+
+//Message
+Route::get('/admin/ticket/{ticket}', [MessageController::class, 'index'])->name('ticket.index');
 
 // Layout
 Route::get('/layout-default-layout', function () {

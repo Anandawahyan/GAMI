@@ -10,6 +10,10 @@
     <div class="main-content">
         <section class="section">
             <div class="section-header">
+                <div class="section-header-back">
+                <a href="/admin/order"
+                        class="btn btn-icon"><i class="fas fa-arrow-left"></i></a>
+                </div>
                 <h1>Order</h1>
                 <div class="section-header-breadcrumb">
                     <div class="breadcrumb-item active"><a href="/admin">Dashboard</a></div>

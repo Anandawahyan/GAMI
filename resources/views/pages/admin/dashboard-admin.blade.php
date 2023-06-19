@@ -201,7 +201,7 @@
                         <div class="card-body p-0">
                             <div class="tickets-list">
                                 @foreach ($messages as $message)                                  
-                                <a href="#"
+                                <a href="/admin/ticket/{{ $message->message_id }}"
                                     class="ticket-item">
                                     <div class="ticket-title">
                                         <h4>{{$message->title}}</h4>

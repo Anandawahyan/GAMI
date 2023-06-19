@@ -27,7 +27,7 @@ class Admin_Dashboard_Controller extends Controller
         $declinedProduct = 0;
         $deliveringProduct = 0;
         $deliveredProduct = 0;
-        $messages = Message::join('users','messages.user_id','=','users.id')->select("messages.message_title as title","messages.message_text as text","users.name as name")->limit(5)->get();
+        $messages = Message::join('users','messages.user_id','=','users.id')->select("messages.message_title as title","messages.message_text as text","users.name as name",'messages.id as message_id')->limit(5)->get();
 
         foreach($orders as $order) {
             if($order->status_id == 1) {

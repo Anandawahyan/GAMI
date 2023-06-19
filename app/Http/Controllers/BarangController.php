@@ -193,4 +193,42 @@ class BarangController extends Controller
         toastr()->success('Barang berhasil dihapus!');
         return redirect()->route('barang.sampah_index');
     }
+
+    public function destroy_all()
+    {
+        $items = Item::join('categories', 'categories.id', '=', 'items.category_id')
+        ->join('colors', 'colors.id', '=', 'items.color_id')
+        ->select('items.id','items.name', 'items.description', 'items.price', 'items.image_url', 'items.condition', 'items.size', 'items.region_of_origin', 'items.sex', 'categories.name AS category_name', 'colors.name AS color_name', 'items.is_sold')
+        ->where('items.is_deleted','=',1)
+        ->get();
+
+        foreach($items as $item) {
+            Storage::delete('public/img/itemImages/'. $item->image_url);
+
+            $item->delete();
+        }
+
+        //redirect to index
+        toastr()->success('Barang berhasil dihapus!');
+        return redirect()->route('barang.sampah_index');
+    }
+
+    public function restore_all()
+    {
+        $items = Item::join('categories', 'categories.id', '=', 'items.category_id')
+        ->join('colors', 'colors.id', '=', 'items.color_id')
+        ->select('items.id','items.name', 'items.description', 'items.price', 'items.image_url', 'items.condition', 'items.size', 'items.region_of_origin', 'items.sex', 'categories.name AS category_name', 'colors.name AS color_name', 'items.is_sold')
+        ->where('items.is_deleted','=',1)
+        ->get();
+
+        foreach($items as $item) {
+            $item->update([
+                'is_deleted'=>0
+            ]);
+        }
+
+        //redirect to index
+        toastr()->success('Barang berhasil direstore!');
+        return redirect()->route('barang.sampah_index');
+    }
 }
