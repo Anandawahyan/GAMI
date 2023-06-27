@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Message;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class MessageController extends Controller
 {
@@ -16,4 +17,36 @@ class MessageController extends Controller
 
         return view('pages.admin.tickets',['type_menu'=>'message','messages'=>$messages, 'messageSpesific'=>$messageSpesific, 'replies'=>$replies]);
     }
+
+    public function store(Request $request, $id) {
+        $this->validate($request, [
+            'reply'=>'required'
+        ]);
+
+        Message::create([
+            'message_text'=>$request->reply,
+            'user_id'=>Auth::user()->id,
+            'message_reference_id'=>$id,
+            'is_solved'=>0
+        ]);
+
+        return redirect()->route('ticket.index', $id);
+    }
+
+    public function setSolved($id) {
+        $messages = Message::where('id', $id)
+        ->orWhere('message_reference_id', $id)
+        ->get();
+
+        foreach($messages as $message) {
+            $message->update([
+                'is_solved'=>1
+            ]);
+        }
+        // echo $messages[0];
+
+        return redirect()->route('dashboard.index');
+    }
+
+    
 }

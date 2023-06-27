@@ -1,0 +1,44 @@
+
+
+/* carousel */
+#HeroBanner .carousel-item img {
+  object-fit: cover;
+  object-position: center;
+  overflow: hidden;
+  max-height: 60vh;
+  width: 100%;
+}
+#HeroBanner .carousel-caption Button {
+  font-weight: 700;
+  font-size: 16px;
+  padding: 20px;
+  padding-left: 50px;
+  padding-right: 50px;
+}
+#HeroBanner .carousel-caption h1 {
+  font-size: 60px;
+  font-weight: 700;
+  text-shadow: 4px 4px black;
+}
+/* card */
+#CategoryCard .card-group {
+  max-height: 100%;
+  width: 100%;
+}
+/*banner2*/
+#banner2 .card {
+  max-height: 100%;
+  width: 100%;
+}
+.card-img-overlay h1 {
+  font-weight: bold;
+  font-size: 32px;
+  color: white;
+  text-shadow: 4px 4px rgba(0, 0, 0, 0.6);
+}
+/*CarouselCard*/
+
+#banner3 .card {
+  max-height: 100%;
+  width: 100%;
+}

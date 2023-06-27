@@ -237,8 +237,13 @@ $.ajax({
   url: '/executive/analysis/marketing',
   type: 'get',
   dataType: 'json',
+  async: true,
   success: function(response) {
     $('.marketing-analysis').text(response.choices[0].text);
+  },
+  error: function(xhr, status, error) {
+    // Handle the error
+    console.error(error);
   }
 });
 

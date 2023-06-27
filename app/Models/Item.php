@@ -3,9 +3,27 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use eloquentFilter\QueryFilter\ModelFilters\Filterable;
 
 class Item extends Model
 {
+    use Filterable;
+
+    private static $whiteListFilter =[
+        'name',
+        'price',
+        'size',
+        'region_of_origin',
+        'category_id',
+        'sex',
+        'color_id',
+        'categories.name'
+    ];
+
+    // private $aliasListFilter = [
+    //     'items.name' => 'item_name',
+    // ];
+
     /**
      * The table associated with the model.
      *

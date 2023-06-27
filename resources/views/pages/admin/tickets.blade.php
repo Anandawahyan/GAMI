@@ -99,14 +99,31 @@
                                             @endforeach
                                         </div>
                                         <div class="ticket-form mt-5">
-                                            <form>
+                                            <form method="POST" action={{ route('ticket.create', $messageSpesific[0]->message_id) }}>
+                                                @csrf
                                                 <div class="form-group">
-                                                    <textarea class="summernote form-control"
+                                                @error('reply')
+                                                <div class="alert alert-danger mt-2">
+                                                    {{ $message }}
+                                                </div>
+                                                @enderror
+                                                    <textarea name="reply" class="summernote form-control"
                                                         placeholder="Type a reply ..."></textarea>
                                                 </div>
                                                 <div class="form-group text-right">
-                                                    <button class="btn btn-primary btn-lg">
+                                                    <button type="submit" class="btn btn-primary btn-lg w-100">
                                                         Reply
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="mt-1">
+                                            <form id="finishThreadForm" method="POST" action="{{ route('ticket.solved', $messageSpesific[0]->message_id) }}">
+                                                @csrf
+                                                @method('PUT')
+                                                <div class="form-group text-right">
+                                                    <button id="finishThread" type="button" class="btn btn-success btn-lg w-100">
+                                                        Selesaikan thread
                                                     </button>
                                                 </div>
                                             </form>
@@ -128,4 +145,19 @@
     <script src="{{ asset('library/chocolat/dist/js/jquery.chocolat.min.js') }}"></script>
 
     <!-- Page Specific JS File -->
+    <script>
+        $('#finishThread').on('click', function() {
+            swal({
+                title: 'Apakah kamu yakin untuk menyelesaikan thread?',
+                icon: 'warning',
+                buttons: true,
+                dangerMode: true,
+            })
+            .then((willFinish) => {
+                if (willFinish) {
+                $('#finishThreadForm').trigger('submit');
+                }
+            });
+        });
+    </script>
 @endpush

@@ -146,9 +146,9 @@
                 <div class="col-md-8">
                     <div class="card">
                         <div class="card-header">
-                            <h4>Invoices</h4>
+                            <h4>Order</h4>
                             <div class="card-header-action">
-                                <a href="#"
+                                <a href="{{ route('order.index') }}"
                                     class="btn btn-danger">View More <i class="fas fa-chevron-right"></i></a>
                             </div>
                         </div>

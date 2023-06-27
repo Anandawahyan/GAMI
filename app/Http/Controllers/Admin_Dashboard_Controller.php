@@ -12,8 +12,22 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Helpers\Rupiah;
 
+/**
+ * @group Dashboard
+ */
 class Admin_Dashboard_Controller extends Controller
 {
+
+    /**
+	 * Show the admin dashboard
+     * 
+	 * Show admin dashboard. charts, list of on going items, business overview.
+     * 
+     * @response {
+     *  "status": 200,
+     *  "success": true
+     * }
+	 */
     public function index() {
         $m = new \Moment\Moment('');
         $m = $m->format('Y-m-d');
@@ -27,7 +41,7 @@ class Admin_Dashboard_Controller extends Controller
         $declinedProduct = 0;
         $deliveringProduct = 0;
         $deliveredProduct = 0;
-        $messages = Message::join('users','messages.user_id','=','users.id')->select("messages.message_title as title","messages.message_text as text","users.name as name",'messages.id as message_id')->limit(5)->get();
+        $messages = Message::join('users','messages.user_id','=','users.id')->select("messages.message_title as title","messages.message_text as text","users.name as name",'messages.id as message_id')->where('role','=','customer')->where('is_solved','=','0')->whereNull('message_reference_id')->limit(5)->get();
 
         foreach($orders as $order) {
             if($order->status_id == 1) {
@@ -54,6 +68,18 @@ class Admin_Dashboard_Controller extends Controller
         'messages'=>$messages
     ]);
     }
+
+    /**
+	 * Get data for charts
+     * 
+	 * Retrieve all the datas that will be preserved for admin dashboard charts. It contains sales by month data.
+     * 
+     * @response {
+     *  "status": 200,
+     *  "success": true,
+     *  "data": [0,1,3,10,11,20,7,9,23,11,8,15] 
+     * }
+	 */
 
     public function getSalesForChart() {
         $salesByMonth = Order::select(DB::raw('MONTH(order_date) AS month_number'), DB::raw('SUM(total_amount) AS revenue'))

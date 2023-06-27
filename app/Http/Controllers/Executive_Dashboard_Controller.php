@@ -8,7 +8,13 @@ use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+use Illuminate\Support\Concurrent\Coroutine;
 
+/**
+ * @group Dashboard
+ */
 class Executive_Dashboard_Controller extends Controller
 {
 
@@ -54,6 +60,8 @@ class Executive_Dashboard_Controller extends Controller
 
     function calculateCustomerSatisfaction($data)
     {
+        
+
         // Prepare the payload for the OpenAI API
         $payload = [
             'model' => 'text-davinci-001',
@@ -78,6 +86,8 @@ class Executive_Dashboard_Controller extends Controller
 
     public function get_marketing_analysis()
     {
+        $client = new Client();
+
         $transaction_data = $this->getTransactionData();
         $stock_data = $this->getStockData();
         $payload = [
@@ -90,50 +100,66 @@ class Executive_Dashboard_Controller extends Controller
             'presence_penalty' => 0,
         ];
 
-        $promise = Http::async()->withHeaders([
-            'Authorization' => 'Bearer'.' '.env('OPENAI_API_KEY'),
-            'Content-Type' => 'application/json',
-        ])->post('https://api.openai.com/v1/completions', $payload)->then(function ($response) {
-            return $response;
-        });;
+        $promise = $client->postAsync('https://api.openai.com/v1/completions', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
+                'Content-Type' => 'application/json',
+            ],
+            'json' => $payload,
+        ])
+        ->then(function ($response) {
+        // Process the completion response
+            $completionData = $response->getBody();
+            // Return the processed data or perform further actions
+            return $completionData;
+        })
+        ->otherwise(function (RequestException $exception) {
+            // Handle the exception if the request fails
+            $errorMessage = $exception->getMessage();
+
+            // Return an error response or perform error handling
+            return $errorMessage;
+        });
+
+        return $promise->wait();
     }
 
-    // public function get_rfm_analysis() {
-    //     $rfmScores = DB::table('orders')
-    //         ->select('buyer_id', DB::raw('DATEDIFF(MAX(order_date), CURDATE()) AS recency'), DB::raw('COUNT(*) AS frequency'), DB::raw('SUM(total_amount) AS monetary_value'))
-    //         ->groupBy('buyer_id')
-    //         ->get();
+    public function get_rfm_analysis() {
+        $rfmScores = DB::table('orders')
+            ->select('buyer_id', DB::raw('DATEDIFF(MAX(order_date), CURDATE()) AS recency'), DB::raw('COUNT(*) AS frequency'), DB::raw('SUM(total_amount) AS monetary_value'))
+            ->groupBy('buyer_id')
+            ->get();
         
-    //         $header = 'buyer_id,recency,frequency,monetary_value';
+            $header = 'buyer_id,recency,frequency,monetary_value';
 
-    //         $rows = $rfmScores->map(function ($result) {
-    //             return implode(',', [
-    //                 $result->buyer_id,
-    //                 $result->recency,
-    //                 $result->frequency,
-    //                 $result->monetary_value,
-    //             ]);
-    //         })->join("\n");
+            $rows = $rfmScores->map(function ($result) {
+                return implode(',', [
+                    $result->buyer_id,
+                    $result->recency,
+                    $result->frequency,
+                    $result->monetary_value,
+                ]);
+            })->join("\n");
     
-    //         $output = $header . "\n" . $rows;
+            $output = $header . "\n" . $rows;
 
-    //         $payload = [
-    //             'model' => 'text-davinci-003',
-    //             'prompt' => $output . 'based on this data, can you give me an analysis like what can i do  based on demographics data. Focus on like what would be the best option for me to leverage my business, make it simple and ONLY use 1 paragraph.(the monetary_value is in rupiah)',
-    //             'temperature' => 0.01,
-    //             'max_tokens' => 256,
-    //             'top_p' => 1,
-    //             'frequency_penalty' => 0,
-    //             'presence_penalty' => 0,
-    //         ];
+            $payload = [
+                'model' => 'text-davinci-003',
+                'prompt' => $output . 'based on this data, can you give me an analysis like what can i do  based on demographics data. Focus on like what would be the best option for me to leverage my business, make it simple and ONLY use 1 paragraph.(the monetary_value is in rupiah)',
+                'temperature' => 0.01,
+                'max_tokens' => 256,
+                'top_p' => 1,
+                'frequency_penalty' => 0,
+                'presence_penalty' => 0,
+            ];
     
-    //         $response = Http::async()->withHeaders([
-    //             'Authorization' => 'Bearer'.' '.env('OPENAI_API_KEY'),
-    //             'Content-Type' => 'application/json',
-    //         ])->post('https://api.openai.com/v1/completions', $payload);
+            $response = Http::async()->withHeaders([
+                'Authorization' => 'Bearer'.' '.env('OPENAI_API_KEY'),
+                'Content-Type' => 'application/json',
+            ])->post('https://api.openai.com/v1/completions', $payload);
     
-    //         return $response;
-    // }
+            return $response;
+    }
 
     // public function get_review_analysis() {
     //         $reviews = DB::table('reviews')->select('review_text')->get();
@@ -159,11 +185,11 @@ class Executive_Dashboard_Controller extends Controller
     function getTransactionData() {
         $result = DB::table('users')
         ->join('orders', 'users.id', '=', 'orders.buyer_id')
-        ->join('transactions','orders.id', '=', 'transactions.id')
+        ->join('transactions','orders.id', '=', 'transactions.order_id')
         ->join('items', 'transactions.item_id', '=', 'items.id')
         ->join('colors', 'colors.id', '=', 'items.color_id')
         ->join('categories', 'categories.id', '=', 'items.category_id')
-        ->select('users.sex as user_sex', 'colors.name as color', 'categories.name as category_name', 'transactions.amount as transaction_amount', 'items.sex as item_for', 'users.birth_date as user_birth_date')
+        ->select('users.sex as user_sex', 'colors.name as color', 'categories.name as category_name', 'items.sex as item_for', 'users.birth_date as user_birth_date')
         ->get();
 
         $header = 'user_sex,name,color,category_name,transaction_amount,item_sex,user_birth_date';
@@ -174,7 +200,6 @@ class Executive_Dashboard_Controller extends Controller
                 $result->user_sex,
                 $result->color,
                 $result->category_name,
-                $result->transaction_amount,
                 $result->item_for,
                 $result->user_birth_date,
             ]);

@@ -200,7 +200,7 @@
                                 <div class="form-group row mb-4">
                                     <label class="col-form-label text-md-right col-12 col-md-3 col-lg-3"></label>
                                     <div class="col-sm-12 col-md-7">
-                                        <button id="buttonSubmit" type="submit" class="btn btn-primary">Tambah Barang</button>
+                                        <button id="buttonSubmit" type="submit" class="btn btn-primary">Edit Barang</button>
                                     </div>
                                 </div>
                             </div>

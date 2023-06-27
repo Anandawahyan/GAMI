@@ -4,18 +4,27 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends Model
+class User extends Authenticatable
 {
     use HasFactory;
 
-    protected $table = 'messages';
+    protected $table = 'users';
 
     protected $primaryKey = 'id';
 
     protected $fillable = [
-        'message_text',
-        'user_id'
+        'id',
+        'name',
+        'email',
+        'password',
+        'address',
+        'sex',
+        'job',
+        'phone_number',
+        'role',
+        'points'
     ];
 
     public function user()

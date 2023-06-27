@@ -1,0 +1,77 @@
+.container {
+    display: flex;
+  }
+  
+  .left-section, .right-section {
+    flex-grow: 1;
+    border: 1px solid black;
+    text-align: center;
+  }
+  
+.border{
+  border: 1px solid black;
+}
+input[type="button"] {
+  background-color: black;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 100%;
+}
+a.right-link {
+  display: block;
+  text-align: right;
+  margin-top: 10px;
+}
+.row{
+  margin-bottom: 40px;
+  padding-top: 30px;
+  padding-left: 40px;
+}
+.tengah {
+  width: 100%;
+}
+.kiri-bawah{
+  border-left: 2px solid black;
+  padding: 10px;
+}
+.img{
+  width: 100%;
+}
+.kiri-bawah, .kiri-atas{
+  width: auto;
+
+}
+.kanan-bawah, .kanan-atas{
+  width: auto;
+}
+
+/* carosel */
+
+
+.carousel {
+  background-color: #ccc;
+  border: 2px solid #000;
+}
+
+.carousel-inner {
+  background-color: #ccc;
+}
+
+.carousel-item {
+  padding: 20px;
+}
+
+.carousel-title {
+  text-align: center;
+  padding: 10px;
+  margin-bottom: 0;
+}
+
+.card {
+  margin-right: 30px;
+  margin-top: 20px;
+}
+

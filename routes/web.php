@@ -1,12 +1,12 @@
 <?php
-
 use App\Http\Controllers\Admin_Dashboard_Controller;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\BarangController;
+use App\Http\Controllers\CustomerBarangController;
 use App\Http\Controllers\Executive_Dashboard_Controller;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\OrderController;
 use Illuminate\Support\Facades\Route;
-
 
 /*
 |--------------------------------------------------------------------------
@@ -19,27 +19,46 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-//Authentication
-Route::get('/register', function() {
-    return view('pages.customer.register');
+Route::get('/', function () {
+    return view('welcome');
 });
 
-//Api
+Route::get('/dashboard', function () {
+    return view('dashboard', ['type_menu'=>'dashboard']);
+})->middleware(['auth'])->name('dashboard');
+
+// Route::get('/login/admin', function() {
+//     return view('pages.admin.login');
+// })->middleware('guest');
+
+// Discount
+Route::get('/discount', [CartController::class, 'getDiscounts']);
+
+//Customer
+Route::get('/', [CustomerBarangController::class, 'index']);
+Route::get('/barang/{barang}', [CustomerBarangController::class, 'show'])->name('customer_barang.show');
+Route::get('/barang', [CustomerBarangController::class, 'catalog_index'])->name('customer_barang.catalog');
+
+//Api Dashboard
 Route::get('/admin/sales', [Admin_Dashboard_Controller::class, 'getSalesForChart']);
 Route::get('/executive/chart', [Executive_Dashboard_Controller::class, 'get_chart_contents']);
 Route::get('/executive/analysis/marketing', [Executive_Dashboard_Controller::class, 'get_marketing_analysis']);
 Route::get('/executive/analysis/rfm', [Executive_Dashboard_Controller::class, 'get_rfm_analysis']);
 Route::get('/executive/analysis/review', [Executive_Dashboard_Controller::class, 'get_review_analysis']);
 
-Route::redirect('/admin','/admin/dashboard');
+Route::redirect('/admin','/admin/dashboard')->middleware(['admin']);
 
 // Dashboard
 Route::get('/executive/dashboard', [Executive_Dashboard_Controller::class, 'index']);
 Route::get('/admin/dashboard', 'App\Http\Controllers\Admin_Dashboard_Controller@index')->name('dashboard.index');
 
+// Cart
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::post('/cart/{cart}', [CartController::class, 'store'])->name('cart.add');
+Route::delete('/cart/{cart}', [CartController::class, 'delete'])->name('cart.delete');
 
 //Resource
-Route::resource('admin/barang', BarangController::class);
+Route::resource('admin/barang', BarangController::class)->middleware(['admin']);
 
 //Sampah
 Route::post('admin/sampah/{barang}', [BarangController::class, 'to_trash'])->name('barang.to_trash');
@@ -55,6 +74,8 @@ Route::put('/admin/order/{order}', [OrderController::class, 'update'])->name('or
 
 //Message
 Route::get('/admin/ticket/{ticket}', [MessageController::class, 'index'])->name('ticket.index');
+Route::post('/admin/ticket/{ticket}', [MessageController::class, 'store'])->name('ticket.create');
+Route::put('/admin/ticket/{ticket}', [MessageController::class, 'setSolved'])->name('ticket.solved');
 
 // Layout
 Route::get('/layout-default-layout', function () {
@@ -291,3 +312,5 @@ Route::get('/utilities-subscribe', function () {
 Route::get('/credits', function () {
     return view('pages.credits', ['type_menu' => '']);
 });
+
+require __DIR__.'/auth.php';
