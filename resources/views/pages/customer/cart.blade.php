@@ -19,7 +19,7 @@
 
                 @else
                   @foreach ($cart_items as $cart_item)
-                    <div class="row">
+                    <div class="row mb-2">
                       <div class="col-4 mb-lg-0">
                         <!-- Image -->
                         <div
@@ -77,6 +77,8 @@
           <div class="col-md-4">
             <div class="card bg-light">
               <div class="card-body">
+                <form action="{{ route('checkout.store') }}" method="POST">
+                  @csrf
                 <h5 class=" fw-bolder fs-3">Summary</h5>
                 <hr>
                 <ul class="list-group list-group-flush bg-light">
@@ -90,7 +92,7 @@
                     class="list-group-item bg-light px-0 fs-6"
                   >
                     <span class="d-inline-block mb-2">Discount</span>
-                    <select id="discountForm" name="discount_id" class="form-select" aria-label="shipping type" {{ count($cart_items) < 1 || Auth::check() == false ? 'disabled' : '' }}>
+                    <select id="discountForm" name="discountId" class="form-select" aria-label="shipping type" {{ count($cart_items) < 1 || Auth::check() == false ? 'disabled' : '' }}>
                     </select>
                   </li>
                   <li
@@ -102,13 +104,16 @@
                         <p class="mb-0">(including VAT)</p>
                       </strong>
                     </div>
-                    <span><strong>{{convertToRupiah($total_price)}}</strong></span>
+                    <span><strong id="priceText">{{ convertToRupiah($total_price) }}</strong></span>
                   </li>
                 </ul>
-    
-                <button type="button" class="btn btn-dark btn-lg btn-block" {{ count($cart_items) < 1 ? 'disabled' : '' }}>
+                
+                <input name="totalPrice" type="hidden" id="totalPriceBeforeDiscount" value="{{ $total_price }}">
+                <input type="hidden" id="discountPercentage" value="">
+                <button type="submit" class="btn btn-dark btn-lg btn-block" {{ count($cart_items) < 1 ? 'disabled' : '' }}>
                   Go to checkout
                 </button>
+              </form>
               </div>
             </div>
           </div>

@@ -1,11 +1,13 @@
 <?php
 use App\Http\Controllers\Admin_Dashboard_Controller;
+use App\Http\Controllers\AlamatController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\CustomerBarangController;
 use App\Http\Controllers\Executive_Dashboard_Controller;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\CheckoutController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -38,6 +40,19 @@ Route::get('/discount', [CartController::class, 'getDiscounts']);
 Route::get('/', [CustomerBarangController::class, 'index']);
 Route::get('/barang/{barang}', [CustomerBarangController::class, 'show'])->name('customer_barang.show');
 Route::get('/barang', [CustomerBarangController::class, 'catalog_index'])->name('customer_barang.catalog');
+
+//Checkout
+// Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+
+Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+
+// Address
+Route::get('/address', [CheckoutController::class, 'getAlamatUser'])->name('checkout.alamatUser');
+Route::post('/address', [AlamatController::class, 'storeAlamatUser'])->name('alamat.store');
+Route::get('/token', function() {
+    echo csrf_token();
+});
 
 //Api Dashboard
 Route::get('/admin/sales', [Admin_Dashboard_Controller::class, 'getSalesForChart']);
