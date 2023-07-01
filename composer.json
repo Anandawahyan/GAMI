@@ -12,6 +12,7 @@
         "laravel/sanctum": "^2.14.1",
         "laravel/tinker": "^2.7",
         "mehdi-fathi/eloquent-filter": "^3.4",
+        "midtrans/midtrans-php": "^2.5",
         "ovac/idoc": "^1.6",
         "yoeunes/toastr": "^2.3"
     },

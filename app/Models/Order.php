@@ -29,13 +29,15 @@ class Order extends Model
      * @var array
      */
     protected $fillable = [
-        'item_id',
         'buyer_id',
         'discount_id',
         'order_date',
         'total_amount',
         'ongkir',
         'status_id',
+        'est_arrival_date',
+        'id_alamat',
+        'snap_token'
     ];
 
     /**
@@ -43,11 +45,6 @@ class Order extends Model
      *
      * @var array
      */
-    public function item()
-    {
-        return $this->belongsTo(Item::class);
-    }
-
     public function user()
     {
         return $this->belongsTo(User::class);

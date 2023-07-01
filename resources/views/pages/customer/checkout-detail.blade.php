@@ -88,19 +88,16 @@
             @endif
           </li>
         </ul>
-        <input type="hidden" name="ongkir" id="ongkirInput">
-        <input type="hidden" name="totalPrice" id="totalPrice" value="{{ $discount ? calculatePriceAfter($total_price, $discount->percentage) : calculatePriceAfter($total_price, 0) }}">
 
-        <form class="card p-2">
-          <div class="input-group">
-            <input type="text" class="form-control" placeholder="Promo code">
-            <button type="submit" class="btn btn-secondary">Redeem</button>
-          </div>
-        </form>
       </div>
       <div class="col-md-7 col-lg-8">
         <h4 class="mb-3">Billing address</h4>
-        <form class="needs-validation" novalidate>
+        <form class="needs-validation" action="{{ route('payment.store') }}" method="POST">
+          @csrf
+          <input type="hidden" name="diskonId" value="{{ $discount ? $discount->id : null }}">
+          <input type="hidden" name="ongkir" id="ongkirInput">
+          <input type="hidden" name="totalPrice" id="totalPrice" value="{{ $discount ? calculatePriceAfter($total_price, $discount->percentage) : calculatePriceAfter($total_price, 0) }}">
+          
           <div class="row g-3">
             <div class="col-sm-12">
               <label for="nama" class="form-label">Full Name</label>

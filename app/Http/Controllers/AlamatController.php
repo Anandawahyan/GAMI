@@ -36,13 +36,14 @@ class AlamatController extends Controller
         ['origin'=>$id_toko, 'destination'=>$id_kota, 'weight'=>1700, 'courier'=>'jne']);
 
         $ongkir = $responseData->json('rajaongkir')['results'][0]['costs'][0]['cost'][0]['value'];
-
+        $shipping_time = $responseData->json('rajaongkir')['results'][0]['costs'][0]['cost'][0]['etd'];
 
         $insertedId = DB::table('alamat')->insertGetId([
             'alamat_rumah'=>$alamat,
             'id_kota'=>$id_kota,
             'ongkir'=>$ongkir,
             'user_id'=>$user_id,
+            'shipping_time'=>intval(explode('-',$shipping_time)[1]),
             'created_at'=>now(),
             'updated_at'=>now()
         ]);

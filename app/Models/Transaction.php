@@ -28,10 +28,7 @@ class Transaction extends Model
     protected $fillable = [
         'item_id',
         'buyer_id',
-        'discount_id',
-        'transaction_date',
-        'amount',
-        'status_id',
+        'order_id',
     ];
 
     /**
@@ -57,5 +54,10 @@ class Transaction extends Model
     public function discount()
     {
         return $this->belongsTo(Discount::class);
+    }
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
     }
 }

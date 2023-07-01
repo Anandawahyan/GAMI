@@ -74,7 +74,7 @@ $('#alamatBaruForm').on('submit', function(e) {
 
 
 function putAlamatToOptions(alamatArray, desiredAlamat = null) {
-    if(!alamatArray) {
+    if(!alamatArray.length && !desiredAlamat) {
         $('#alamatId').prop('disabled', true);
         return
     }
@@ -86,7 +86,7 @@ function putAlamatToOptions(alamatArray, desiredAlamat = null) {
         changeTotalPrice(desiredAlamat.ongkir);
         $('#alamatId').append(`<option selected value="${desiredAlamat.id}">${desiredAlamat.alamat_rumah}</option>`);
         // $('#alamatId').append(alamatArray.map(alamat => `<option ${desiredAlamatId === alamat.id ? 'selected' : ''} value="${alamat.id_kota}">${alamat.alamat_rumah}</option>`));
-    } else {
+    } else if(alamatArray.length) {
         $('#alamatId').append(alamatArray.map((alamat, index) => `<option ${index === 0 ? 'selected' : ''} value="${alamat.id}">${alamat.alamat_rumah}</option>`));
         console.log(alamatArray[0].ongkir);
         changeOngkir(alamatArray[0].ongkir);

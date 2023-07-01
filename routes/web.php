@@ -8,6 +8,7 @@ use App\Http\Controllers\Executive_Dashboard_Controller;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\PaymentController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -41,9 +42,14 @@ Route::get('/', [CustomerBarangController::class, 'index']);
 Route::get('/barang/{barang}', [CustomerBarangController::class, 'show'])->name('customer_barang.show');
 Route::get('/barang', [CustomerBarangController::class, 'catalog_index'])->name('customer_barang.catalog');
 
-//Checkout
-// Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+// Invoices
+Route::get('/user/invoices', function() {
+    return view('pages.customer.invoices');
+});
+Route::get('user/invoices/{order}', [PaymentController::class, 'show'])->name('payment.show');
+Route::post('user/invoices', [PaymentController::class, 'store'])->name('payment.store');
 
+// Checkout
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 
