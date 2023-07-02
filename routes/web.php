@@ -46,17 +46,17 @@ Route::get('/barang', [CustomerBarangController::class, 'catalog_index'])->name(
 Route::get('/user/invoices', function() {
     return view('pages.customer.invoices');
 });
-Route::get('user/invoices/{order}', [PaymentController::class, 'show'])->name('payment.show');
-Route::post('user/invoices', [PaymentController::class, 'store'])->name('payment.store');
-Route::put('user/invoices/{order}', [PaymentController::class, 'update_order_status'])->name('payment.update'); 
+Route::get('user/invoices/{order}', [PaymentController::class, 'show'])->name('payment.show')->middleware(['auth']);
+Route::post('user/invoices', [PaymentController::class, 'store'])->name('payment.store')->middleware(['auth']);
+Route::put('user/invoices/{order}', [PaymentController::class, 'update_order_status'])->name('payment.update')->middleware(['auth']); 
 
 // Checkout
-Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
-Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index')->middleware(['auth']);
+Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store')->middleware(['auth']);
 
 // Address
-Route::get('/address', [CheckoutController::class, 'getAlamatUser'])->name('checkout.alamatUser');
-Route::post('/address', [AlamatController::class, 'storeAlamatUser'])->name('alamat.store');
+Route::get('/address', [CheckoutController::class, 'getAlamatUser'])->name('checkout.alamatUser')->middleware(['auth']);
+Route::post('/address', [AlamatController::class, 'storeAlamatUser'])->name('alamat.store')->middleware(['auth']);
 Route::get('/token', function() {
     echo csrf_token();
 });

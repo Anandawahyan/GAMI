@@ -75,8 +75,18 @@
             <input type="hidden" name="statusId" value="1">
             <button type="button" class="btn btn-primary" id="pay-button">Lanjutkan Pembayaran</button>
           </form>
+          @elseif ($order->status_id == 3)
+          <form id="gantiStatusForm" action="{{ route('payment.update', $order->id) }}" method="POST">
+            @method('PUT')
+            @csrf
+            <input type="hidden" name="statusId" value="4">
+            <button type="button" class="btn btn-success" id="pay-button">Pesanan Diterima</button>
+          </form>
           @endif
-          @if($order->status_id == 1 || $order->status_id == 5)
+          @elseif ($order->status_id == 4)
+            <a href="#" class="btn btn-success" id="pay-button">Beri Review</a>
+          @endif
+          @if($order->status_id != 2 || $order->status_id != 4)
           <form id="batalinOrderForm" action="{{ route('payment.update', $order->id) }}" method="POST">
             @method('PUT')
             @csrf
