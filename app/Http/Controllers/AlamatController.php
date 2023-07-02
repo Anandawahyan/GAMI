@@ -37,9 +37,11 @@ class AlamatController extends Controller
 
         $ongkir = $responseData->json('rajaongkir')['results'][0]['costs'][0]['cost'][0]['value'];
         $shipping_time = $responseData->json('rajaongkir')['results'][0]['costs'][0]['cost'][0]['etd'];
+        $destination_details = $responseData->json('rajaongkir')['destination_details'];
+        $alamat_lengkap = $alamat . strtoupper("," . ($destination_details['type'] == 'Kabupaten' ? ' KAB.' : ' KOTA') . ' ' . $destination_details['city_name'] . ', ' . $destination_details['province'] . ', ' . $destination_details['postal_code']);
 
         $insertedId = DB::table('alamat')->insertGetId([
-            'alamat_rumah'=>$alamat,
+            'alamat_rumah'=> $alamat_lengkap,
             'id_kota'=>$id_kota,
             'ongkir'=>$ongkir,
             'user_id'=>$user_id,
@@ -50,7 +52,7 @@ class AlamatController extends Controller
 
         // $alamats = DB::table('alamat')
 
-        $response['data'] = ['id'=>$insertedId, 'alamat_rumah'=>$alamat,'ongkir'=>$ongkir];
+        $response['data'] = ['id'=>$insertedId, 'alamat_rumah'=>$alamat_lengkap,'ongkir'=>$ongkir];
 
 
         return response()->json($response);

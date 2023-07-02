@@ -171,13 +171,11 @@
               @endforeach
             </select>
           </div>
-          <button type="submit" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        </form>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
+          </div>
+          </form>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Send message</button>
-      </div>
-    </div>
   </div>
 </div>
 

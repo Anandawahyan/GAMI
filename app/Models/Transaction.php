@@ -41,21 +41,6 @@ class Transaction extends Model
         return $this->belongsTo(Item::class);
     }
 
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    public function status()
-    {
-        return $this->belongsTo(Status::class);
-    }
-
-    public function discount()
-    {
-        return $this->belongsTo(Discount::class);
-    }
-
     public function order()
     {
         return $this->belongsTo(Order::class);

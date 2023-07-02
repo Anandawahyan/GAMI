@@ -48,6 +48,7 @@ Route::get('/user/invoices', function() {
 });
 Route::get('user/invoices/{order}', [PaymentController::class, 'show'])->name('payment.show');
 Route::post('user/invoices', [PaymentController::class, 'store'])->name('payment.store');
+Route::put('user/invoices/{order}', [PaymentController::class, 'update_order_status'])->name('payment.update'); 
 
 // Checkout
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');

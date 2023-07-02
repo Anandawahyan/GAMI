@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+Use App\Traits\Uuids;
+// use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
 
 class Order extends Model
 {
     use HasFactory;
+    use Uuids;
 
     /**
      * The table associated with the model.
@@ -21,7 +25,7 @@ class Order extends Model
      *
      * @var string
      */
-    protected $primaryKey = 'id';
+    // protected $primaryKey = 'id';
 
     /**
      * The attributes that are mass assignable.
@@ -29,6 +33,7 @@ class Order extends Model
      * @var array
      */
     protected $fillable = [
+        'id',
         'buyer_id',
         'discount_id',
         'order_date',
@@ -47,16 +52,21 @@ class Order extends Model
      */
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'buyer_id');
     }
 
     public function status()
     {
-        return $this->belongsTo(Status::class);
+        return $this->belongsTo(Status::class, 'status_id');
     }
 
     public function discount()
     {
-        return $this->belongsTo(Discount::class);
+        return $this->belongsTo(Discount::class, 'discount_id');
+    }
+
+    public function alamat()
+    {
+        return $this->belongsTo(Alamat::class, 'id_alamat');
     }
 }

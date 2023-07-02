@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Models\Order;
 
 class User extends Authenticatable
 {
@@ -27,9 +28,9 @@ class User extends Authenticatable
         'points'
     ];
 
-    public function user()
+    public function orders()
     {
-        return $this->belongsTo(User::class);
+        return $this->hasMany(Order::class);
     }
     
 }

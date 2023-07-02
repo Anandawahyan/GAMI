@@ -57,6 +57,9 @@ let plugins = [
     "gmaps",
 ];
 
+let mix = require('laravel-mix');
+
+
 plugins.forEach((plugin) => {
     mix.copy("./node_modules/" + plugin, "public/library/" + plugin);
 });

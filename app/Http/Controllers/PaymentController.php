@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Order;
 use App\Models\Transaction;
 use App\Models\Item;
+use App\Models\Alamat;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use App\Services\Midtrans\CreateSnapTokenService;
@@ -16,7 +17,23 @@ use App\Services\Midtrans\CreateSnapTokenService;
 class PaymentController extends Controller
 {
     public function show(Order $order) {
+        // dd($order);
         $snapToken = $order->snap_token;
+        $user = $order->user;
+        $name = $user->name;
+        $alamat = $order->alamat;
+        $status = $order->status;
+        $discount = $order->discount;
+
+        // dd([$status, $discount]);
+
+        $itemIds = Transaction::select('item_id')->where('order_id','=',$order->id)->get();
+        $ids = array_map(function($item) {
+            return $item['item_id'];
+        }, $itemIds->toArray());
+
+        $items = Item::find([$ids]);
+        // dd(Order::find('id',$order->id));
 
         if (is_null($snapToken)) {
             // If snap token is still NULL, generate snap token and save it to database
@@ -28,7 +45,7 @@ class PaymentController extends Controller
             $order->save();
         }
 
-        return view('pages.customer.invoices', ['snap_token'=>$snapToken, 'order'=>$order]);
+        return view('pages.customer.invoices', ['snap_token'=>$snapToken, 'order'=>$order,'user_name'=>$name,'items'=>$items, 'alamat'=>$alamat, 'status'=>$status, 'discount'=>$discount]);
     }
 
     public function store(Request $request) {
@@ -73,11 +90,27 @@ class PaymentController extends Controller
      
         // dd($order);
         $order->save();
+        Session::forget('cart_items');
 
         return redirect()->route('payment.show', $uid);
     }
 
-    public function update_order_status($status_id, $order_id) {
+    public function update_order_status(Request $request, Order $order) {
+        // echo "berhasil";
+        $order->status_id = $request->statusId;
 
+        if($request->status_id == 2) {
+            $itemIds = Transaction::select('item_id')->where('order_id','=',$order->id)->get();
+            
+            foreach($itemIds as $item) {
+                $item = Item::find('id','=',$item->item_id);
+                $item->is_sold = 0;
+
+                $item->save();
+            }
+        }
+        $order->save();
+
+        return redirect()->route('payment.show', $order->id);
     }
 }

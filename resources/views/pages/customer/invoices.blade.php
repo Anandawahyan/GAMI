@@ -10,42 +10,48 @@
 <div class="card mx-auto my-4" style="width: 100%; max-width: 675px;">
     <div class="card-body mx-4">
       <div class="container">
-        <p class="my-5 text-center" style="font-size: 30px;">Invoice</span> #12345</p>
+        <p class="my-5 text-center" style="font-size: 30px;">Invoice</span> #{{ $order->id }}</p>
         <div class="row">
           <ul class="list-unstyled">
             <li class="text-black d-flex justify-content-between mb-2">
-                <span class="fw-bolder">John Doe</span>
-                <span>April 17 2021</span>
+                <span class="fw-bolder">{{$user_name}}</span>
+                <span>{{convertDateToIndo($order->est_arrival_date)}}</span>
             </li>
-            <li class="text-black">Jln Pemuda</li>
+            <li class="text-black">{{$alamat->alamat_rumah}}</li>
             <li class="text-muted mt-1"><span class="text-black"></li>
           </ul>
+        </div>
           <hr>
+          @foreach ($items as $item)
+            <div class="row">
+              <div class="col-xl-10">
+                <p>{{ $item->name }}</p>
+              </div>
+              <div class="col-xl-2">
+                <p class="float-end">{{ convertToRupiah($item->price) }}
+                </p>
+              </div>
+            </div>
+            <hr>
+          @endforeach
+        @if($order->discount_id)
+        <div class="row">
           <div class="col-xl-10">
-            <p>Pro Package</p>
+            <p>{{ $discount->name }}</p>
           </div>
           <div class="col-xl-2">
-            <p class="float-end">$199.00
+            <p class="float-end">{{ convertToRupiah(calculateDiskon($order->total_amount, $discount->percentage)) }}
             </p>
           </div>
           <hr>
         </div>
+        @endif
         <div class="row">
           <div class="col-xl-10">
-            <p>Consulting</p>
+            <p>Ongkir</p>
           </div>
           <div class="col-xl-2">
-            <p class="float-end">$100.00
-            </p>
-          </div>
-          <hr>
-        </div>
-        <div class="row">
-          <div class="col-xl-10">
-            <p>Support</p>
-          </div>
-          <div class="col-xl-2">
-            <p class="float-end">$10.00
+            <p class="float-end">{{ convertToRupiah($order->ongkir) }}
             </p>
           </div>
           <hr style="border: 2px solid black;">
@@ -53,23 +59,31 @@
         <div class="row text-black">
   
           <div class="col-xl-12">
-            <p class="float-end fw-bold">Total: $10.00
+            <p class="float-end fw-bold">Total: {{convertToRupiah($order->total_amount + $order->ongkir)}}
             </p>
           </div>
           <hr style="border: 2px solid black;">
         </div>
         <div class="text-center">
-            <p>Status : Belum Dibayar</p>
+            <p>Status : {{$status->name}}</p>
         </div>
         <div class="text-center d-flex justify-content-center">
           @if ($order->status_id == 5)
-          <form action="">
+          <form id="gantiStatusForm" action="{{ route('payment.update', $order->id) }}" method="POST">
+            @method('PUT')
+            @csrf
+            <input type="hidden" name="statusId" value="1">
             <button type="button" class="btn btn-primary" id="pay-button">Lanjutkan Pembayaran</button>
           </form>
-        @elseif($order->status_id == 3)
-            Payment successful
-        @endif
+          @endif
+          @if($order->status_id == 1 || $order->status_id == 5)
+          <form id="batalinOrderForm" action="{{ route('payment.update', $order->id) }}" method="POST">
+            @method('PUT')
+            @csrf
+            <input type="hidden" name="statusId" value="2">
             <button class="btn btn-danger">Batalkan Pesanan</button>
+          </form>
+          @endif
         </div>
         <div class="text-center" style="margin-top: 90px;">
           <p>GAMI &#169;</p>
@@ -91,9 +105,12 @@
           snap.pay('{{ $snap_token }}', {
               // Optional
               onSuccess: function(result) {
+                console.log('pretty woman');
+                $('#gantiStatusForm').trigger('submit');
+                  
                   /* You may add your own js here, this is just example */
                   // document.getElementById('result-json').innerHTML += JSON.stringify(result, null, 2);
-                  console.log(result)
+                  // console.log(result)
               },
               // Optional
               onPending: function(result) {
