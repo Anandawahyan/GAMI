@@ -16,6 +16,13 @@ use App\Services\Midtrans\CreateSnapTokenService;
 
 class PaymentController extends Controller
 {
+    public function index() {
+        $user_id = Auth::user()->id;
+        $orders = Order::join('status','status.id','=','orders.status_id')->select('orders.*','status.name as status')->where('buyer_id','=',$user_id)->where('status_id','!=',2)->get();
+        // dd($orders);
+        return view('pages.customer.orders', ['orders'=>$orders]);
+    }
+
     public function show(Order $order) {
         // dd($order);
         $snapToken = $order->snap_token;
@@ -33,7 +40,8 @@ class PaymentController extends Controller
         }, $itemIds->toArray());
 
         $items = Item::find([$ids]);
-        // dd(Order::find('id',$order->id));
+        $totalPriceBeforeDiscount = $items->sum('price');
+        // dd($totalPriceBeforeDiscount);
 
         if (is_null($snapToken)) {
             // If snap token is still NULL, generate snap token and save it to database
@@ -45,7 +53,7 @@ class PaymentController extends Controller
             $order->save();
         }
 
-        return view('pages.customer.invoices', ['snap_token'=>$snapToken, 'order'=>$order,'user_name'=>$name,'items'=>$items, 'alamat'=>$alamat, 'status'=>$status, 'discount'=>$discount]);
+        return view('pages.customer.invoices', ['snap_token'=>$snapToken, 'order'=>$order,'user_name'=>$name,'items'=>$items, 'alamat'=>$alamat, 'status'=>$status, 'discount'=>$discount, 'totalPriceBeforeDiscount'=>$totalPriceBeforeDiscount]);
     }
 
     public function store(Request $request) {

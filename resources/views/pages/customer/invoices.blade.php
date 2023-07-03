@@ -7,6 +7,7 @@
 @endpush
 
 @section('main')
+<a href="/" style="width: fit-content" class="btn btn-light d-block mb-4"><i class="fas fa-arrow-left"></i> Back</a>
 <div class="card mx-auto my-4" style="width: 100%; max-width: 675px;">
     <div class="card-body mx-4">
       <div class="container">
@@ -40,7 +41,7 @@
             <p>{{ $discount->name }}</p>
           </div>
           <div class="col-xl-2">
-            <p class="float-end">{{ convertToRupiah(calculateDiskon($order->total_amount, $discount->percentage)) }}
+            <p class="float-end">{{ convertToRupiah(calculateDiskon($totalPriceBeforeDiscount, $discount->percentage)) }}
             </p>
           </div>
           <hr>
@@ -80,18 +81,17 @@
             @method('PUT')
             @csrf
             <input type="hidden" name="statusId" value="4">
-            <button type="button" class="btn btn-success" id="pay-button">Pesanan Diterima</button>
+            <button type="button" class="btn btn-success" id="lanjutkan">Pesanan Diterima</button>
           </form>
-          @endif
           @elseif ($order->status_id == 4)
-            <a href="#" class="btn btn-success" id="pay-button">Beri Review</a>
+            <a href="#" class="btn btn-success" id="lanjutkan">Beri Review</a>
           @endif
-          @if($order->status_id != 2 || $order->status_id != 4)
+          @if($order->status_id != 2 && $order->status_id != 4)
           <form id="batalinOrderForm" action="{{ route('payment.update', $order->id) }}" method="POST">
             @method('PUT')
             @csrf
             <input type="hidden" name="statusId" value="2">
-            <button class="btn btn-danger">Batalkan Pesanan</button>
+            <button type="button" id="batalkan" class="btn btn-danger">Batalkan Pesanan</button>
           </form>
           @endif
         </div>
@@ -109,32 +109,51 @@
   </script>
   <script>
       const payButton = document.querySelector('#pay-button');
-      payButton.addEventListener('click', function(e) {
-          e.preventDefault();
+      const buttonLanjut = document.querySelector('#lanjutkan');
+      const buttonBatalkan = document.querySelector('#batalkan')
 
-          snap.pay('{{ $snap_token }}', {
-              // Optional
-              onSuccess: function(result) {
-                console.log('pretty woman');
-                $('#gantiStatusForm').trigger('submit');
-                  
-                  /* You may add your own js here, this is just example */
-                  // document.getElementById('result-json').innerHTML += JSON.stringify(result, null, 2);
-                  // console.log(result)
-              },
-              // Optional
-              onPending: function(result) {
-                  /* You may add your own js here, this is just example */
-                  // document.getElementById('result-json').innerHTML += JSON.stringify(result, null, 2);
-                  console.log(result)
-              },
-              // Optional
-              onError: function(result) {
-                  /* You may add your own js here, this is just example */
-                  // document.getElementById('result-json').innerHTML += JSON.stringify(result, null, 2);
-                  console.log(result)
-              }
-          });
-      });
+      if(buttonLanjut) {
+        buttonLanjut.addEventListener('click', function(e) {
+          e.preventDefault();
+          $('#gantiStatusForm').trigger('submit');
+        });
+      }
+
+      if(buttonBatalkan) {
+        buttonBatalkan.addEventListener('click', function(e) {
+          e.preventDefault();
+          $('#batalinOrderForm').trigger('submit');
+        });
+      }
+
+      if(payButton) {
+        payButton.addEventListener('click', function(e) {
+            e.preventDefault();
+  
+            snap.pay('{{ $snap_token }}', {
+                // Optional
+                onSuccess: function(result) {
+                  console.log('pretty woman');
+                  $('#gantiStatusForm').trigger('submit');
+                    
+                    /* You may add your own js here, this is just example */
+                    // document.getElementById('result-json').innerHTML += JSON.stringify(result, null, 2);
+                    // console.log(result)
+                },
+                // Optional
+                onPending: function(result) {
+                    /* You may add your own js here, this is just example */
+                    // document.getElementById('result-json').innerHTML += JSON.stringify(result, null, 2);
+                    console.log(result)
+                },
+                // Optional
+                onError: function(result) {
+                    /* You may add your own js here, this is just example */
+                    // document.getElementById('result-json').innerHTML += JSON.stringify(result, null, 2);
+                    console.log(result)
+                }
+            });
+        });
+      }
   </script>
   @endpush

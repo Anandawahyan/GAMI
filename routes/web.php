@@ -41,11 +41,9 @@ Route::get('/discount', [CartController::class, 'getDiscounts']);
 Route::get('/', [CustomerBarangController::class, 'index']);
 Route::get('/barang/{barang}', [CustomerBarangController::class, 'show'])->name('customer_barang.show');
 Route::get('/barang', [CustomerBarangController::class, 'catalog_index'])->name('customer_barang.catalog');
+Route::get('user/invoices', [PaymentController::class, 'index']);
 
 // Invoices
-Route::get('/user/invoices', function() {
-    return view('pages.customer.invoices');
-});
 Route::get('user/invoices/{order}', [PaymentController::class, 'show'])->name('payment.show')->middleware(['auth']);
 Route::post('user/invoices', [PaymentController::class, 'store'])->name('payment.store')->middleware(['auth']);
 Route::put('user/invoices/{order}', [PaymentController::class, 'update_order_status'])->name('payment.update')->middleware(['auth']); 
@@ -62,24 +60,30 @@ Route::get('/token', function() {
 });
 
 //Api Dashboard
-Route::get('/admin/sales', [Admin_Dashboard_Controller::class, 'getSalesForChart']);
-Route::get('/executive/chart', [Executive_Dashboard_Controller::class, 'get_chart_contents']);
-Route::get('/executive/analysis/marketing', [Executive_Dashboard_Controller::class, 'get_marketing_analysis']);
-Route::get('/executive/analysis/rfm', [Executive_Dashboard_Controller::class, 'get_rfm_analysis']);
-Route::get('/executive/analysis/review', [Executive_Dashboard_Controller::class, 'get_review_analysis']);
+Route::middleware('admin')->group(function () {
+    Route::get('/admin/sales', [Admin_Dashboard_Controller::class, 'getSalesForChart']);
+    Route::get('/executive/chart', [Executive_Dashboard_Controller::class, 'get_chart_contents']);
+    Route::get('/executive/analysis/marketing', [Executive_Dashboard_Controller::class, 'get_marketing_analysis']);
+    Route::get('/executive/analysis/rfm', [Executive_Dashboard_Controller::class, 'get_rfm_analysis']);
+    Route::get('/executive/analysis/review', [Executive_Dashboard_Controller::class, 'get_review_analysis']);
+});
 
 Route::redirect('/admin','/admin/dashboard')->middleware(['admin']);
 
 // Dashboard
-Route::get('/executive/dashboard', [Executive_Dashboard_Controller::class, 'index']);
-Route::get('/admin/dashboard', 'App\Http\Controllers\Admin_Dashboard_Controller@index')->name('dashboard.index');
+Route::middleware('admin')->group(function () {
+    Route::get('/executive/dashboard', [Executive_Dashboard_Controller::class, 'index']);
+    Route::get('/admin/dashboard', 'App\Http\Controllers\Admin_Dashboard_Controller@index')->name('dashboard.index');
+});
 
 // Cart
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/{cart}', [CartController::class, 'store'])->name('cart.add');
 Route::delete('/cart/{cart}', [CartController::class, 'delete'])->name('cart.delete');
 
+Route::middleware('admin')->group(function () {
 //Resource
+
 Route::resource('admin/barang', BarangController::class)->middleware(['admin']);
 
 //Sampah
@@ -93,6 +97,7 @@ Route::put('/admin/sampah/{barang}', [BarangController::class, 'to_restore'])->n
 Route::get('/admin/order', [OrderController::class, 'index'])->name('order.index');
 Route::get('/admin/order/{order}', [OrderController::class, 'show'])->name('order.detail');
 Route::put('/admin/order/{order}', [OrderController::class, 'update'])->name('order.update');
+});
 
 //Message
 Route::get('/admin/ticket/{ticket}', [MessageController::class, 'index'])->name('ticket.index');
