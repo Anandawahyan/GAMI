@@ -25,7 +25,8 @@ class User extends Authenticatable
         'job',
         'phone_number',
         'role',
-        'points'
+        'points',
+        'birth_date'
     ];
 
     public function orders()

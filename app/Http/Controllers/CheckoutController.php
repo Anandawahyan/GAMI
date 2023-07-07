@@ -55,20 +55,6 @@ class CheckoutController extends Controller
         return view('pages.customer.checkout-detail', ['name'=>$name, 'email'=>$email, 'discount'=>$discount, 'items'=>$items, 'total_price'=>$totalPrice, 'daftar_kota'=>$responseData]);
     }
 
-    public function getAlamatUser() {
-        $response['data'] = 0;
-
-        $idUser = Auth::user()->id;
-        $alamatUser = DB::table('alamat')->select('*')->where('user_id','=',$idUser)->get();
-
-        if(count($alamatUser) > 0) {
-            $response['data'] = $alamatUser;
-            return response()->json($response);
-        }
-
-        return response()->json($response);
-    }
-
     public function store(Request $request) {
         $items = session('cart_items');
         $totalPrice =  $request->totalPrice;

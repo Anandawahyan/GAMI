@@ -183,9 +183,9 @@
             <h2 class="h3 text-primary" style="font-weight: bold;"> Analysis</h2>
             <div class="row">
                 <div class="col-6">
-                <div class="card">
+                <div class="card" style="background-color: #FFD6A5; color: #000">
                     <div class="card-header">
-                        <h4>Marketing Analysis</h4>
+                        <h4 style="color: #000">Marketing Analysis</h4>
                     </div>
                     <div class="card-body">
                         <p style="font-size: 16px" class="marketing-analysis">Please wait...</p>
@@ -193,9 +193,9 @@
                 </div>
                 </div>
                 <div class="col-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h4>Customer RFM Analysis</h4>
+                <div class="card" style="background-color: #FF9B9B; color: #000">
+                    <div class="card-header" style="color: #000">
+                        <h4 style="color: #000">Customer RFM Analysis</h4>
                     </div>
                     <div class="card-body">
                         <p style="font-size: 16px" class="rfm-analysis">Please wait...</p>
@@ -203,9 +203,9 @@
                 </div>
                 </div>
                 <div class="col-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h4>Product Review Analysis</h4>
+                <div class="card" style="background-color: #9BE8D8; color: #000">
+                    <div class="card-header" style="color: #000">
+                        <h4 style="color: #000">Product Review Analysis</h4>
                     </div>
                     <div class="card-body">
                         <p style="font-size: 16px" class="review-analysis">Please wait...</p>

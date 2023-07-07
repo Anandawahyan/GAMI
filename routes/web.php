@@ -1,14 +1,19 @@
 <?php
 use App\Http\Controllers\Admin_Dashboard_Controller;
 use App\Http\Controllers\AlamatController;
+use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\BarangController;
+use App\Http\Controllers\ChatBotController;
 use App\Http\Controllers\CustomerBarangController;
 use App\Http\Controllers\Executive_Dashboard_Controller;
+use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,10 +27,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
 Route::get('/dashboard', function () {
     return view('dashboard', ['type_menu'=>'dashboard']);
 })->middleware(['auth'])->name('dashboard');
@@ -33,6 +34,9 @@ Route::get('/dashboard', function () {
 // Route::get('/login/admin', function() {
 //     return view('pages.admin.login');
 // })->middleware('guest');
+
+// Password
+Route::get('/password/random', [KaryawanController::class, 'get_random_password']);
 
 // Discount
 Route::get('/discount', [CartController::class, 'getDiscounts']);
@@ -42,6 +46,7 @@ Route::get('/', [CustomerBarangController::class, 'index']);
 Route::get('/barang/{barang}', [CustomerBarangController::class, 'show'])->name('customer_barang.show');
 Route::get('/barang', [CustomerBarangController::class, 'catalog_index'])->name('customer_barang.catalog');
 Route::get('user/invoices', [PaymentController::class, 'index']);
+Route::get('user/profile', [ProfileController::class, 'index']);
 
 // Invoices
 Route::get('user/invoices/{order}', [PaymentController::class, 'show'])->name('payment.show')->middleware(['auth']);
@@ -53,27 +58,43 @@ Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.in
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store')->middleware(['auth']);
 
 // Address
-Route::get('/address', [CheckoutController::class, 'getAlamatUser'])->name('checkout.alamatUser')->middleware(['auth']);
+Route::get('/address', [AlamatController::class, 'getAlamatUser'])->name('checkout.alamatUser')->middleware(['auth']);
 Route::post('/address', [AlamatController::class, 'storeAlamatUser'])->name('alamat.store')->middleware(['auth']);
 Route::get('/token', function() {
     echo csrf_token();
 });
 
+Route::post('/gpt',[ChatBotController::class, 'getGPTResponse']);
+
+// Reviews
+Route::post('/review/{review}', [ReviewController::class, 'store'])->name('review.store')->middleware('auth');
+
 //Api Dashboard
-Route::middleware('admin')->group(function () {
-    Route::get('/admin/sales', [Admin_Dashboard_Controller::class, 'getSalesForChart']);
+// Route::middleware('admin')->group(function () {
+    
+// });
+Route::get('/admin/sales', [Admin_Dashboard_Controller::class, 'getSalesForChart']);
     Route::get('/executive/chart', [Executive_Dashboard_Controller::class, 'get_chart_contents']);
     Route::get('/executive/analysis/marketing', [Executive_Dashboard_Controller::class, 'get_marketing_analysis']);
     Route::get('/executive/analysis/rfm', [Executive_Dashboard_Controller::class, 'get_rfm_analysis']);
     Route::get('/executive/analysis/review', [Executive_Dashboard_Controller::class, 'get_review_analysis']);
-});
 
 Route::redirect('/admin','/admin/dashboard')->middleware(['admin']);
+
+// ChatBot
+Route::get('/chatbot', function() {
+    return view('pages.customer.chatBot');
+});
 
 // Dashboard
 Route::middleware('admin')->group(function () {
     Route::get('/executive/dashboard', [Executive_Dashboard_Controller::class, 'index']);
     Route::get('/admin/dashboard', 'App\Http\Controllers\Admin_Dashboard_Controller@index')->name('dashboard.index');
+});
+
+// Aktivitas
+Route::middleware('admin')->group(function () {
+    Route::get('/admin/activity', [ActivityController::class, 'index'])->name('activity.index');
 });
 
 // Cart
@@ -82,21 +103,25 @@ Route::post('/cart/{cart}', [CartController::class, 'store'])->name('cart.add');
 Route::delete('/cart/{cart}', [CartController::class, 'delete'])->name('cart.delete');
 
 Route::middleware('admin')->group(function () {
-//Resource
+    //Resource
+    Route::resource('admin/barang', BarangController::class)->middleware(['admin']);
 
-Route::resource('admin/barang', BarangController::class)->middleware(['admin']);
+    //Sampah
+    Route::post('admin/sampah/{barang}', [BarangController::class, 'to_trash'])->name('barang.to_trash');
+    Route::get('/admin/sampah', [BarangController::class, 'sampah_index'])->name('barang.sampah_index');
+    Route::delete('/admin/sampah', [BarangController::class, 'destroy_all'])->name('barang.destroy_all');
+    Route::post('/admin/sampah', [BarangController::class, 'restore_all'])->name('barang.restore_all');
+    Route::put('/admin/sampah/{barang}', [BarangController::class, 'to_restore'])->name('barang.to_restore');
 
-//Sampah
-Route::post('admin/sampah/{barang}', [BarangController::class, 'to_trash'])->name('barang.to_trash');
-Route::get('/admin/sampah', [BarangController::class, 'sampah_index'])->name('barang.sampah_index');
-Route::delete('/admin/sampah', [BarangController::class, 'destroy_all'])->name('barang.destroy_all');
-Route::post('/admin/sampah', [BarangController::class, 'restore_all'])->name('barang.restore_all');
-Route::put('/admin/sampah/{barang}', [BarangController::class, 'to_restore'])->name('barang.to_restore');
+    //Order
+    Route::get('/admin/order', [OrderController::class, 'index'])->name('order.index');
+    Route::get('/admin/order/{order}', [OrderController::class, 'show'])->name('order.detail');
+    Route::put('/admin/order/{order}', [OrderController::class, 'update'])->name('order.update');
 
-//Order
-Route::get('/admin/order', [OrderController::class, 'index'])->name('order.index');
-Route::get('/admin/order/{order}', [OrderController::class, 'show'])->name('order.detail');
-Route::put('/admin/order/{order}', [OrderController::class, 'update'])->name('order.update');
+    //Karyawan
+    Route::get('/admin/karyawan', [KaryawanController::class, 'index'])->name('karyawan.index');
+    Route::post('/admin/karyawan', [KaryawanController::class, 'store'])->name('karyawan.store');
+    Route::delete('/admin/karyawan/{karyawan}', [KaryawanController::class, 'destroy'])->name('karyawan.delete');
 });
 
 //Message

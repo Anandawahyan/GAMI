@@ -13,3 +13,10 @@
     a {
     text-decoration:none;    
     }
+
+    .star-rating {
+        line-height:32px;
+        font-size:1.25em;
+      }
+      
+      .star-rating .fa-star{color: #FFD95A !important;}

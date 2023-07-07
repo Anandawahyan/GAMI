@@ -31,6 +31,7 @@ class PaymentController extends Controller
         $alamat = $order->alamat;
         $status = $order->status;
         $discount = $order->discount;
+        $reviews = DB::table('reviews')->where('order_id', $order->id)->get();
 
         // dd([$status, $discount]);
 
@@ -38,8 +39,9 @@ class PaymentController extends Controller
         $ids = array_map(function($item) {
             return $item['item_id'];
         }, $itemIds->toArray());
-
-        $items = Item::find([$ids]);
+        // dd($ids);
+        $items = Item::find($ids);
+        // dd($items);
         $totalPriceBeforeDiscount = $items->sum('price');
         // dd($totalPriceBeforeDiscount);
 
@@ -53,7 +55,7 @@ class PaymentController extends Controller
             $order->save();
         }
 
-        return view('pages.customer.invoices', ['snap_token'=>$snapToken, 'order'=>$order,'user_name'=>$name,'items'=>$items, 'alamat'=>$alamat, 'status'=>$status, 'discount'=>$discount, 'totalPriceBeforeDiscount'=>$totalPriceBeforeDiscount]);
+        return view('pages.customer.invoices', ['snap_token'=>$snapToken, 'order'=>$order,'user_name'=>$name,'items'=>$items, 'alamat'=>$alamat, 'status'=>$status, 'discount'=>$discount, 'totalPriceBeforeDiscount'=>$totalPriceBeforeDiscount, 'reviews'=>$reviews]);
     }
 
     public function store(Request $request) {
@@ -116,6 +118,10 @@ class PaymentController extends Controller
 
                 $item->save();
             }
+        } else if($request->status_id == 4) {
+            $targetedUser = $order->user;
+            $targetedUser->points = $targetedUser->points + $order->total_amount/1000;
+            $targetedUser->save();
         }
         $order->save();
 

@@ -12,8 +12,18 @@ if (!function_exists('convertDateToIndo')) {
     {
         // \Moment\Moment::setLocale('id_ID');
         $m = new \Moment\Moment($date);
-        $formattedDate = $m->format('D, d-M-y');
+        $formattedDate = $m->setTimezone('Asia/Bangkok')->format('D, d-M-y');
         return $formattedDate;
+    }
+}
+
+if (!function_exists('getTime')) {
+    function getTime($date)
+    {
+        // \Moment\Moment::setLocale('id_ID');
+        $m = new \Moment\Moment($date);
+        $formattedTime = $m->setTimezone('Asia/Bangkok')->format('H:i');
+        return $formattedTime;
     }
 }
 

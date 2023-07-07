@@ -7,7 +7,9 @@
 @endpush
 
 @section('main')
-<a href="/" style="width: fit-content" class="btn btn-light d-block mb-4"><i class="fas fa-arrow-left"></i> Back</a>
+<div class="mx-auto mt-4" style="width: 100%; max-width: 675px;">
+  <a href="/user/invoices" style="width: fit-content" class="btn btn-light d-block mb-4"><i class="fas fa-arrow-left"></i> Back</a>
+</div>
 <div class="card mx-auto my-4" style="width: 100%; max-width: 675px;">
     <div class="card-body mx-4">
       <div class="container">
@@ -84,7 +86,14 @@
             <button type="button" class="btn btn-success" id="lanjutkan">Pesanan Diterima</button>
           </form>
           @elseif ($order->status_id == 4)
-            <a href="#" class="btn btn-success" id="lanjutkan">Beri Review</a>
+          @if(count($reviews) > 0)
+            <div>
+              <p>Rating : {{ $reviews[0]->rating }}</p>
+              <p>{{ $reviews[0]->review_text }}</p>
+            </div>
+          @else
+          <button type="button" data-bs-toggle="modal" data-bs-target="#alamatModal" class="btn btn-success">Beri Review</button>
+          @endif
           @endif
           @if($order->status_id != 2 && $order->status_id != 4)
           <form id="batalinOrderForm" action="{{ route('payment.update', $order->id) }}" method="POST">
@@ -101,6 +110,45 @@
   
       </div>
     </div>
+  </div>
+  <div class="modal fade" id="alamatModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Tambah Alamat</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="reviewForm" action="{{ route('review.store', $order->id) }}" method="POST">
+            @csrf
+            <div class="mb-3">
+              <div class="card">
+                <div class="card-body text-center"> 
+                 <span class="myratings">4.5</span>
+                    <h4 class="mt-1">Rate us</h4>
+
+                    <div class="star-rating" style="color: #FFD95A">
+                      <span class="fa fa-star-o" data-rating="1"></span>
+                      <span class="fa fa-star-o" data-rating="2"></span>
+                      <span class="fa fa-star-o" data-rating="3"></span>
+                      <span class="fa fa-star-o" data-rating="4"></span>
+                      <span class="fa fa-star-o" data-rating="5"></span>
+                      <input type="hidden" name="rating" class="rating-value" value="2">
+                    </div>
+                </div>
+            </div>
+            </div>
+            <div class="mb-3">
+              <label for="komen" class="form-label">Komen</label>
+              <textarea placeholder="Berikan komentar anda disini..." name="komen" class="form-control" id="komen" rows="5"></textarea>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
+            </div>
+          </form>
+        </div>
+    </div>
+  </div>
   </div>
   @endsection
 
@@ -155,5 +203,29 @@
             });
         });
       }
+  </script>
+  <script>
+    var $star_rating = $('.star-rating .fa');
+
+var SetRatingStar = function() {
+  return $star_rating.each(function() {
+    if (parseInt($star_rating.siblings('input.rating-value').val()) >= parseInt($(this).data('rating'))) {
+      return $(this).removeClass('fa-star-o').addClass('fa-star');
+    } else {
+      return $(this).removeClass('fa-star').addClass('fa-star-o');
+    }
+  });
+};
+
+$star_rating.on('click', function() {
+  $star_rating.siblings('input.rating-value').val($(this).data('rating'));
+  $('.myratings').text($(this).data('rating'));
+  return SetRatingStar();
+});
+
+SetRatingStar();
+$(document).ready(function() {
+
+});
   </script>
   @endpush

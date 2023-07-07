@@ -25,6 +25,7 @@ $.ajax({
       RFMGroupingCustomers,
       totalSpendingCategoryData
      } = response.data;
+    console.log(menWomenDemographicData);
     var myChart = new Chart(statistics_chart, {
       type: 'line',
       data: {
@@ -262,6 +263,9 @@ $.ajax({
   dataType: 'json',
   success: function(response) {
     $('.review-analysis').text(response.choices[0].text);
+  },
+  error: function(e) {
+    console.log(e.responseText);
   }
 });
 

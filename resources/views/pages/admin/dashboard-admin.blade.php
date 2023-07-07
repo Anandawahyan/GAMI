@@ -164,22 +164,24 @@
                                     </tr>
                                     @foreach($onGoingItems as $onGoingItem)
                                     <tr>
-                                        <td><a href="#">{{ $onGoingItem->id }}</a></td>
+                                        <td><a class="text-reset" style="text-decoration: none" href="/admin/order/{{ $onGoingItem->id }}">{{ $onGoingItem->id }}</a></td>
                                         <td class="font-weight-600">{{ $onGoingItem->name }}</td>
                                         <td>
                                                @if ($onGoingItem->status == 1)
-                                               <div class="badge badge-warning">Dikemas</div>
+                                               <div class="badge badge-warning bg-warning">Dikemas</div>
                                                @elseif ($onGoingItem->status == 2)
                                                <div class="badge badge-danger">Ditolak</div>
                                                @elseif ($onGoingItem->status == 3)
                                                <div class="badge badge-info">Diantar</div>
                                                @elseif ($onGoingItem->status == 4)
                                                <div class="badge badge-success">Diterima</div>
+                                               @else
+                                               <div class="badge badge-primary bg-primary">Belum bayar</div>
                                                @endif
                                         </td>
                                         <td>{{ convertDateToIndo($onGoingItem->date) }}</td>
                                         <td>
-                                            <a href="#"
+                                            <a href="/admin/order/{{ $onGoingItem->id }}"
                                                 class="btn btn-primary">Detail</a>
                                         </td>
                                     </tr>

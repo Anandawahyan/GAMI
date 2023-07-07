@@ -45,6 +45,22 @@
                                 name="password_confirmation" required />
             </div>
 
+            <!-- Email Address -->
+            <div class="mt-4">
+                <x-label for="sex" :value="__('Sex')" />
+
+                <select id="sex" class="block mt-1 w-full" name="sex" :value="{{old('sex')}}" required>
+                    <option>Pilih jenis kelamin</option>
+                    <option value="Laki-laki">Laki-laki</option>
+                    <option value="Perempuan">Perempuan</option>
+                </select>
+            </div>
+
+            <div class="mt-4">
+                <x-label for="birth_date" :value="__('Birth Date')" />
+                <input type="date" id="birth_date" class="block mt-1 w-full" name="birth_date" :value="{{old('birth_date')}}" required >
+            </div>
+
             <div class="flex items-center justify-end mt-4">
                 <a class="underline text-sm text-gray-600 hover:text-gray-900" href="{{ route('login') }}">
                     {{ __('Already registered?') }}

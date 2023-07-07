@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Message;
+use App\Models\Activity;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
@@ -19,6 +20,7 @@ class MessageController extends Controller
     }
 
     public function store(Request $request, $id) {
+        
         $this->validate($request, [
             'reply'=>'required'
         ]);
@@ -34,6 +36,7 @@ class MessageController extends Controller
     }
 
     public function setSolved($id) {
+        $admin_user = Auth::user();
         $messages = Message::where('id', $id)
         ->orWhere('message_reference_id', $id)
         ->get();
@@ -43,6 +46,15 @@ class MessageController extends Controller
                 'is_solved'=>1
             ]);
         }
+
+        $activity = new Activity();
+        $activity->id_user = $admin_user->id;
+        $activity->activity = "telah menyelesaikan message {$id}";
+        $activity->type = 'message';
+        $activity->created_at = now();
+        $activity->updated_at = now();
+        $activity->save();
+        
         // echo $messages[0];
 
         return redirect()->route('dashboard.index');

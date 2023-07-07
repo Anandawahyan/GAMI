@@ -64,7 +64,7 @@
                                             <td class="font-weight-600">{{ $order->name }}</td>
                                             <td>
                                                    @if ($order->status == 1)
-                                                   <div class="badge badge-warning">Dikemas</div>
+                                                   <div class="badge badge-warning bg-warning">Dikemas</div>
                                                    @elseif ($order->status == 2)
                                                    <div class="badge badge-danger">Ditolak</div>
                                                    @elseif ($order->status == 3)

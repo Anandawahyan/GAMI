@@ -34,7 +34,7 @@ class Admin_Dashboard_Controller extends Controller
 
         $salesCount = Order::whereRaw('WEEK(order_date) = WEEK(?)', [$m])->count();
         $orders = Order::all();
-        $this_week_revenue = convertToRupiah(Order::whereRaw('WEEK(order_date) = WEEK(?)', [$m])->sum('total_amount'));
+        $this_week_revenue = convertToRupiah(Order::whereRaw('WEEK(order_date) = WEEK(?)', [$m])->where('status_id','=',4)->sum('total_amount'));
         $total_products = Item::all()->count();
         $onGoingItems = Order::join('users','orders.buyer_id','=','users.id')->where('orders.status_id','<',4)->select('orders.id as id','users.name as name','orders.order_date as date','orders.status_id as status')->limit(5)->get();
         $confirmedProduct = 0;
@@ -83,6 +83,7 @@ class Admin_Dashboard_Controller extends Controller
 
     public function getSalesForChart() {
         $salesByMonth = Order::select(DB::raw('MONTH(order_date) AS month_number'), DB::raw('SUM(total_amount) AS revenue'))
+                ->where('status_id','=',4)
                 ->whereYear('order_date', 2023)
                 ->groupBy(DB::raw('MONTH(order_date)'))
                 ->orderBy(DB::raw('MONTH(order_date)'))

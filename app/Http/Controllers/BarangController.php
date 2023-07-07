@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Item;
+use App\Models\Activity;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 /**
      * @group Barang
@@ -75,8 +77,11 @@ class BarangController extends Controller
 	 */
     public function create()
     {
+        
         $categories = DB::table('categories')->get();
         $colors = DB::table('colors')->get();
+
+        
         
         return view('pages.admin.barang-create',["type_menu"=>'barang', 'categories'=>$categories, 'colors'=>$colors]);
     }
@@ -108,6 +113,7 @@ class BarangController extends Controller
 	 */
     public function store(Request $request)
     {
+        $admin_user = Auth::user();
         $this->validate($request, [
             'image'     => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'name'     => 'required|min:5',
@@ -137,6 +143,14 @@ class BarangController extends Controller
             'region_of_origin' => $request->region_of_origin,
             'is_sold'=> 0
         ]);
+
+        $activity = new Activity();
+        $activity->id_user = $admin_user->id;
+        $activity->activity = "telah memasukkan barang bernama {$request->name}";
+        $activity->type = 'barang';
+        $activity->created_at = now();
+        $activity->updated_at = now();
+        $activity->save();
 
         toastr()->success('Barang berhasil dimasukkan');
         return redirect()->route('barang.index');
@@ -231,7 +245,7 @@ class BarangController extends Controller
 	 */
     public function update(Request $request, Item $barang)
     {
-        echo '<p>'.$barang.'</p>';
+        $admin_user = Auth::user();
         $this->validate($request, [
             'image'     => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'name'     => 'required|min:5',
@@ -284,6 +298,14 @@ class BarangController extends Controller
             ]);
         }
 
+        $activity = new Activity();
+        $activity->id_user = $admin_user->id;
+        $activity->activity = "telah mengupdate barang dengan id {$barang->id}";
+        $activity->type = 'barang';
+        $activity->created_at = now();
+        $activity->updated_at = now();
+        $activity->save();
+
         toastr()->success('Barang berhasil diedit');
         return redirect()->route('barang.index');
     }
@@ -304,9 +326,18 @@ class BarangController extends Controller
 	 */
     public function to_trash(Item $barang)
     {
+        $admin_user = Auth::user();
         $barang->update([
             'is_deleted'=>1
         ]);
+
+        $activity = new Activity();
+        $activity->id_user = $admin_user->id;
+        $activity->activity = "telah memasukkan barang dengan id {$barang->id} ke tong sampah";
+        $activity->type = 'barang';
+        $activity->created_at = now();
+        $activity->updated_at = now();
+        $activity->save();
 
         toastr()->success('Barang berhasil dimasukkan ke keranjang sampah');
         return redirect()->route('barang.index');
@@ -329,9 +360,18 @@ class BarangController extends Controller
 	 */
     public function to_restore(Item $barang)
     {
+        $admin_user = Auth::user();
         $barang->update([
             'is_deleted'=>0
         ]);
+
+        $activity = new Activity();
+        $activity->id_user = $admin_user->id;
+        $activity->activity = "telah merestore barang dengan id {$barang->id} dari tong sampah";
+        $activity->type = 'barang';
+        $activity->created_at = now();
+        $activity->updated_at = now();
+        $activity->save();
 
         toastr()->success('Barang berhasil direstore!');
         return redirect()->route('barang.sampah_index');
@@ -354,11 +394,20 @@ class BarangController extends Controller
 	 */
     public function destroy(Item $barang)
     {
+        $admin_user = Auth::user();
         //delete image
         Storage::delete('public/img/itemImages/'. $barang->image_url);
 
         //delete post
         $barang->delete();
+
+        $activity = new Activity();
+        $activity->id_user = $admin_user->id;
+        $activity->activity = "telah menghapus barang dengan id {$barang->id}";
+        $activity->type = 'barang';
+        $activity->created_at = now();
+        $activity->updated_at = now();
+        $activity->save();
 
         //redirect to index
         toastr()->success('Barang berhasil dihapus!');
@@ -380,6 +429,7 @@ class BarangController extends Controller
 	 */
     public function destroy_all()
     {
+        $admin_user = Auth::user();
         $items = Item::join('categories', 'categories.id', '=', 'items.category_id')
         ->join('colors', 'colors.id', '=', 'items.color_id')
         ->select('items.id','items.name', 'items.description', 'items.price', 'items.image_url', 'items.condition', 'items.size', 'items.region_of_origin', 'items.sex', 'categories.name AS category_name', 'colors.name AS color_name', 'items.is_sold')
@@ -391,6 +441,14 @@ class BarangController extends Controller
 
             $item->delete();
         }
+
+        $activity = new Activity();
+        $activity->id_user = $admin_user->id;
+        $activity->activity = "telah menghapus semua barang di tong sampah";
+        $activity->type = 'barang';
+        $activity->created_at = now();
+        $activity->updated_at = now();
+        $activity->save();
 
         //redirect to index
         toastr()->success('Barang berhasil dihapus!');
@@ -411,6 +469,7 @@ class BarangController extends Controller
 	 */
     public function restore_all()
     {
+        $admin_user = Auth::user();
         $items = Item::join('categories', 'categories.id', '=', 'items.category_id')
         ->join('colors', 'colors.id', '=', 'items.color_id')
         ->select('items.id','items.name', 'items.description', 'items.price', 'items.image_url', 'items.condition', 'items.size', 'items.region_of_origin', 'items.sex', 'categories.name AS category_name', 'colors.name AS color_name', 'items.is_sold')
@@ -422,6 +481,14 @@ class BarangController extends Controller
                 'is_deleted'=>0
             ]);
         }
+
+        $activity = new Activity();
+        $activity->id_user = $admin_user->id;
+        $activity->activity = "telah merestore semua barang dari tong sampah";
+        $activity->type = 'barang';
+        $activity->created_at = now();
+        $activity->updated_at = now();
+        $activity->save();
 
         //redirect to index
         toastr()->success('Barang berhasil direstore!');

@@ -37,7 +37,7 @@
                   <div class="d-sm-none d-lg-inline-block">Hi, {{ Auth::user()->name }}</div>
               </a>
               <div class="dropdown-menu dropdown-menu-right">
-                  <a href="features-profile.html"
+                  <a href="/user/profile"
                       class="dropdown-item has-icon">
                       <i class="far fa-user"></i> Profile
                   </a>

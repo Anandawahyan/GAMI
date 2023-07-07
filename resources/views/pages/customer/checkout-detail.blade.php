@@ -178,6 +178,7 @@
       </div>
   </div>
 </div>
+</div>
 
 
 <script src="{{ asset('library/jquery/dist/jquery.min.js') }}"></script>

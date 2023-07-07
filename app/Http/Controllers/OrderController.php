@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Activity;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
@@ -43,9 +45,26 @@ class OrderController extends Controller
     }
 
     public function update(Request $request, Order $order) {
+        $admin_user = Auth::user();
+
         $order->update([
             'status_id'=>$request->status
         ]);
+        $status = $order->status;
+
+        if($request->status == 4) {
+            $user = $order->user;
+            $user->points = $user->points + $order->total_amount/1000;
+            $user->save();
+        }
+
+        $activity = new Activity();
+        $activity->id_user = $admin_user->id;
+        $activity->activity = "telah mengubah status order {$order->id} menjadi {$status->name}";
+        $activity->type = 'order';
+        $activity->created_at = now();
+        $activity->updated_at = now();
+        $activity->save();
 
         return redirect()->route('order.detail', $order->id);
     }

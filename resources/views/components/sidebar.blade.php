@@ -11,14 +11,17 @@
                 <a href="#"
                     class="nav-link has-dropdown"><i class="fas fa-fire"></i><span>Dashboard</span></a>
                 <ul class="dropdown-menu">
+                    @if(Auth::user()->role == 'executive')
                     <li class='{{ Request::is('executive/dashboard') ? 'active' : '' }}'>
                         <a class="nav-link"
                             href="{{ url('executive/dashboard') }}">General Dashboard</a>
                     </li>
+                    @else
                     <li class="{{ Request::is('admin/dashboard') ? 'active' : '' }}">
                         <a class="nav-link"
                             href="{{ route('dashboard.index') }}">Admin Dashboard</a>
                     </li>
+                    @endif
                 </ul>
             </li>
             <li class="nav-item dropdown {{ $type_menu === 'barang' ? 'active' : '' }}">
@@ -26,9 +29,9 @@
                     class="nav-link has-dropdown"><i class="fas fa-box-open"></i><span>Barang</span></a>
                 <ul class="dropdown-menu">
                     <li class='{{ Request::is('admin/barang') ? 'active' : '' }}'>
-                        <a class="nav-link"
-                            href="{{ url('admin/barang') }}">Semua Barang</a>
+                        <a class="nav-link" href="{{ url('admin/barang') }}">Semua Barang</a>
                     </li>
+                    @if(Auth::user()->role == 'admin')
                     <li class="{{ Request::is('admin/barang/create') ? 'active' : '' }}">
                         <a class="nav-link"
                             href="{{ url('admin/barang/create') }}">Tambah Barang</a>
@@ -37,6 +40,7 @@
                         <a class="nav-link"
                             href="{{ url('admin/sampah') }}">Sampah</a>
                     </li>
+                    @endif
                 </ul>
             </li>
             <li class="nav-item dropdown {{ $type_menu === 'order' ? 'active' : '' }}">
@@ -49,6 +53,14 @@
                     </li>
                 </ul>
             </li>
+            <li class="nav-item">
+                <a href="/admin/activity">Riwayat</a>
+            </li>
+            @if(Auth::user()->role == 'executive')
+            <li class="nav-item">
+                <a href="/admin/karyawan">Karyawan</a>
+            </li>
+            @endif
             {{-- {{-- <li class="menu-header">Starter</li>
             <li class="nav-item dropdown {{ $type_menu === 'layout' ? 'active' : '' }}">
                 <a href="#"
@@ -72,9 +84,10 @@
         </ul>
 
         <div class="hide-sidebar-mini mt-4 mb-4 p-3">
-            <a href="https://getstisla.com/docs"
-                class="btn btn-primary btn-lg btn-block btn-icon-split">
-                <i class="fas fa-rocket"></i> Documentation
+            <a href="/idoc"
+                class="btn btn-primary btn-lg btn-block w-100 text-start">
+                <i class="fas fa-rocket"></i>
+                <span class="d-inline-block">Documentation</span>
             </a>
         </div>
     </aside>

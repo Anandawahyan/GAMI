@@ -92,7 +92,7 @@ class Executive_Dashboard_Controller extends Controller
         $stock_data = $this->getStockData();
         $payload = [
             'model' => 'text-davinci-003',
-            'prompt' => $transaction_data.'based on this data, can you give me a marketing analysis like what would be the best selling items based on demographics data. Focus on like what gender should i approach? what age should i approach? make it simple and ONLY use 1 paragraph. At the end give me a suggestion on what should i do, IF in my inventory data is like this :\n'.$stock_data,
+            'prompt' => $transaction_data.'Based on this data, can you give me a marketing analysis like what would be the best selling items based on demographics data. Focus on like what gender should i approach? what age should i approach? Provide output ONLY 1 paragraph and analyse future marketing theme. At the end give me a suggestion on what should i do, IF in my inventory data is like this\n'.$stock_data,
             'temperature' => 0.05,
             'max_tokens' => 256,
             'top_p' => 1,
@@ -153,7 +153,7 @@ class Executive_Dashboard_Controller extends Controller
                 'presence_penalty' => 0,
             ];
     
-            $response = Http::async()->withHeaders([
+            $response = Http::withHeaders([
                 'Authorization' => 'Bearer'.' '.env('OPENAI_API_KEY'),
                 'Content-Type' => 'application/json',
             ])->post('https://api.openai.com/v1/completions', $payload);
@@ -161,26 +161,26 @@ class Executive_Dashboard_Controller extends Controller
             return $response;
     }
 
-    // public function get_review_analysis() {
-    //         $reviews = DB::table('reviews')->select('review_text')->get();
+    public function get_review_analysis() {
+            $reviews = DB::table('reviews')->select('review_text')->get();
 
-    //         $payload = [
-    //             'model' => 'text-davinci-001',
-    //             'prompt' => json_encode($reviews) . 'write a conclusion about this review text data, i want to know what is my customers thinking about my products, Focus on what should i improve based on it. make it simple and ONLY use 1 paragraph.',
-    //             'temperature' => 0.01,
-    //             'max_tokens' => 256,
-    //             'top_p' => 1,
-    //             'frequency_penalty' => 0,
-    //             'presence_penalty' => 0,
-    //         ];
+            $payload = [
+                'model' => 'text-davinci-001',
+                'prompt' => json_encode($reviews) . 'write a conclusion about this review text data, i want to know what is my customers thinking about my products, Focus on what should i improve based on it. make it simple and ONLY use 1 paragraph.',
+                'temperature' => 0.01,
+                'max_tokens' => 256,
+                'top_p' => 1,
+                'frequency_penalty' => 0,
+                'presence_penalty' => 0,
+            ];
     
-    //         $response = Http::async()->withHeaders([
-    //             'Authorization' => 'Bearer'.' '.env('OPENAI_API_KEY'),
-    //             'Content-Type' => 'application/json',
-    //         ])->post('https://api.openai.com/v1/completions', $payload);
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer'.' '.env('OPENAI_API_KEY'),
+                'Content-Type' => 'application/json',
+            ])->post('https://api.openai.com/v1/completions', $payload);
     
-    //         return $response;
-    // }
+            return $response;
+    }
 
     function getTransactionData() {
         $result = DB::table('users')
@@ -257,10 +257,14 @@ class Executive_Dashboard_Controller extends Controller
 
         $categories_and_colors_per_category = $this->get_colors_per_category();
 
-        $men_women_demographic = DB::table('users')->join('orders', 'users.id', '=', 'orders.buyer_id')
-        ->select('users.sex as JENIS KELAMIN', DB::raw('COUNT(*) as JUMLAH'))
-        ->groupBy('users.sex')
-        ->get();
+        $men_women_demographic = DB::table(DB::raw('(
+            SELECT DISTINCT buyer_id
+            FROM orders
+        ) as o'))
+            ->join('users as u', 'u.id', '=', 'o.buyer_id')
+            ->select('u.sex as JENIS KELAMIN', DB::raw('COUNT(*) as JUMLAH'))
+            ->groupBy('u.sex')
+            ->get();
 
         $response['data']['salesByChartContent'] = $sales_by_chart_content;
         $response['data']['categories'] = $categories_and_colors_per_category['categories'];

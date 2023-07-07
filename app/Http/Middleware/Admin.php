@@ -18,7 +18,7 @@ class Admin
     public function handle(Request $request, Closure $next)
     {
         if(Auth::check()) {
-            if(Auth::user()->role == 'admin') {
+            if(Auth::user()->role == 'admin' || Auth::user()->role == 'executive') {
                 return $next($request);
             }
             toastr()->error('Only admin can access!');
