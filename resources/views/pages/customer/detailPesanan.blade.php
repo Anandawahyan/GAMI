@@ -5,6 +5,7 @@
 
 @push('style')
     <!-- CSS Libraries -->
+    <link rel="stylesheet" href="{{ asset('css/fitAssistant.css') }}">
 @endpush
 
 @section('main')
@@ -268,7 +269,7 @@
                     </div>
                     <div class="row my-5">
                       <div class="col" >
-                        <p id="output"></p>
+                        <p id="output">Please wait...</p>
                     </div>
                     
                   </div>

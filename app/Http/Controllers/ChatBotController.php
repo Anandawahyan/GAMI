@@ -14,7 +14,7 @@ class ChatBotController extends Controller
         
             $payload = [
                 'model' => 'text-davinci-003',
-                'prompt' => $items . "Berdasarkan data ini, jawablah pertanyaan yang diajukan. Jika anda merekomendasikan produk maka anda bisa menambahkan link yang templatenya seperti ini 'http://127.0.0.1:8000/barang/{id_item}'. pertanyaannya adalah ini :" . $request->chatInput . '.',
+                'prompt' => $items . "Berdasarkan data ini, jawablah pertanyaan yang diajukan. Jika anda merekomendasikan produk maka anda bisa menambahkan link item dengan format <a href='http://127.0.0.1:8000/barang/{id_item}'>{name}</a>. Pertanyaannya adalah ini : " . $request->chatInput . '.',
                 'temperature' => 0.5,
                 'max_tokens' => 300,
                 'top_p' => 1,
@@ -31,18 +31,20 @@ class ChatBotController extends Controller
     }
 
     public function getItemsData() {
-        $result = Item::join('categories','categories.id','=','items.category_id')->join('colors','colors.id','=','items.color_id')->select('items.id','items.name','items.sex','items.size','categories.name as category','colors.name as color')->where('is_sold','=',0)->where('is_deleted','=',0)->get();
+        $result = Item::join('categories','categories.id','=','items.category_id')->join('colors','colors.id','=','items.color_id')->select('items.id','items.name','items.sex','items.size','categories.name as category','colors.name as color','items.region_of_origin')->where('is_sold','=',0)->where('is_deleted','=',0)->get();
 
-        $header = 'name,sex,size,category,color';
+        $header = 'id,name,sex,size,category,color, region_of_origin';
 
         // Create the data rows
         $rows = $result->map(function ($result) {
             return implode(',', [
+                $result->id,
                 $result->name,
                 $result->sex,
                 $result->size,
                 $result->category,
                 $result->color,
+                $result->region_of_origin,
             ]);
         })->join("\n");
 

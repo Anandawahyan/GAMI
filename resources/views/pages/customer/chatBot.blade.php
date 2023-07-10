@@ -82,24 +82,50 @@ for (var i = 0; i < chats.length; i++) {
 $("#chat-form").on('submit', function (e) {
     e.preventDefault();
     var me = $(this);
+    let chatInput = me.find("#textInput").val();
 
     if (me.find("input").val().trim().length > 0) {
         $.chatCtrl("#mychatbox", {
             text: me.find("#textInput").val(),
             picture: "/img/avatar/avatar-2.png",
         });
+        $.chatCtrl("#mychatbox", {
+            picture: "/img/avatar/avatar-1.png",
+            position: 'left',
+            type: 'typing'
+        });
+        me.find("#textInput").val("");
+
         $.ajax({
         url: '/gpt',
         type: 'POST',
         dataType: 'json',
-        data: {chatInput: me.find("#textInput").val()},
+        data: {chatInput: chatInput},
         success: function(response) {
-            me.find("#textInput").val("");
-            $.chatCtrl("#mychatbox", {
-            text: response.choices[0].text,
-            picture: "/img/avatar/avatar-1.png",
-            position: 'left'
+            $('.chat-content').html(null);
+            chats.push({
+                text: chatInput,
+                picture: "/img/avatar/avatar-2.png",
+                position: 'right'
+            }, {
+                text: response.choices[0].text,
+                picture: "/img/avatar/avatar-2.png",
+                position: "left"
             });
+
+            for (var i = 0; i < chats.length; i++) {
+                var type = "text";
+                if (chats[i].typing != undefined) type = "typing";
+                $.chatCtrl("#mychatbox", {
+                    text: chats[i].text != undefined ? chats[i].text : "",
+                    picture:
+                chats[i].position == "left"
+                    ? "/img/avatar/avatar-1.png"
+                    : "/img/avatar/avatar-2.png",
+                position: "chat-" + chats[i].position,
+                type: type,
+            });
+}
         },
         error: function(err) {
             console.log(err);

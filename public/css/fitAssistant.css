@@ -1,0 +1,40 @@
+.custom-range::-webkit-slider-thumb {
+  background: black;
+}
+
+.custom-range::-moz-range-thumb {
+  background: black;
+}
+
+.custom-range::-ms-thumb {
+  background: black;
+}
+.inputText {
+  font-size: xx-large;
+  text-align: center;
+  font-weight: bold;
+}
+input[type="button"][name="perut"] {
+  background-color: white;
+  border: none;
+  color: black;
+  border-radius: 6px;
+}
+
+input[type="button"][name="perut"]:focus,
+input[type="button"][name="perut"]:hover {
+  background-color: black;
+  color: white;
+}
+input[type="button"][name="dada"] {
+  background-color: white;
+  border: none;
+  color: black;
+  border-radius: 6px;
+}
+
+input[type="button"][name="dada"]:focus,
+input[type="button"][name="dada"]:hover {
+  background-color: black;
+  color: white;
+}

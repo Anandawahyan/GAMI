@@ -23,6 +23,9 @@
           <li class="nav-item mx-auto">
             <a class="nav-link active" aria-current="page" href="/barang?sex%5B%5D=Unisex">Unisex</a>
           </li>
+          <li class="nav-item mx-auto">
+            <a class="nav-link active" aria-current="page" href="/chatbot">Chatbox</a>
+          </li>
         </ul>
      
         <a href="/cart" class="cart-link me-3">

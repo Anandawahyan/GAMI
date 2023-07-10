@@ -135,7 +135,7 @@ function processInput() {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
+      Authorization: `Bearer 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`,
     },
     body: JSON.stringify({
       messages: [
